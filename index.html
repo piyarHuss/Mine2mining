@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pro Crypto Miner Elite</title>
+    
+    <!-- TELEGRAM WEB APP SDK (Yeh add karna zaroori tha) -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -93,6 +97,21 @@
         .action-btns button:active { transform: scale(0.95); }
         .withdraw-btn { background: linear-gradient(135deg, #ef4444, #dc2626); color: white; box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3); }
         .play-game-btn { background: linear-gradient(135deg, var(--warning), #d97706); color: white; box-shadow: 0 8px 20px rgba(245, 158, 11, 0.3); }
+
+        /* --- BANNER AD CONTAINER CSS --- */
+        .ad-banner-container {
+            margin-top: 25px;
+            width: 100%;
+            min-height: 60px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 12px;
+            border: 1px dashed rgba(255,255,255,0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
 
         /* --- PLINKO GAME STYLES --- */
         .game-container { padding: 5px 15px; }
@@ -230,6 +249,21 @@
                     <button class="withdraw-btn" onclick="openWithdrawModal()"><i class="fa-solid fa-money-bill-transfer"></i> Withdraw</button>
                     <button class="play-game-btn" onclick="switchTab('gamePage')"><i class="fa-solid fa-dice"></i> Casino</button>
                 </div>
+
+                <!-- RICHADS BANNER AD SECTION -->
+                <div class="ad-banner-container">
+                    <script src="https://richinfo.co/richpartners/telegram/js/tg-ob.js"></script>
+                    <script>
+                        if (!window.TelegramAdsControllerInstance) {
+                            window.TelegramAdsControllerInstance = new TelegramAdsController();
+                            window.TelegramAdsControllerInstance.initialize({
+                                pubId: "997172",
+                                appId: "6406",
+                            });
+                        }
+                    </script>
+                </div>
+
             </div>
         </div>
 
@@ -320,7 +354,7 @@
             </div>
         </div>
 
-        <!-- HISTORY MODAL (NEW) -->
+        <!-- HISTORY MODAL -->
         <div class="modal-overlay" id="historyModal">
             <div class="withdraw-box" style="max-height: 80vh; display: flex; flex-direction: column;">
                 <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px;">
@@ -368,6 +402,11 @@
     <!-- MAIN GAME LOGIC                            -->
     <!-- ========================================== -->
     <script>
+        // Init Telegram Web App (Taki Ads code sahi se chale)
+        if (window.Telegram && window.Telegram.WebApp) {
+            window.Telegram.WebApp.ready();
+        }
+
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         let audioCtx;
 
@@ -399,8 +438,6 @@
         // ADMIN SETTINGS
         let SYS_BASE_RATE = parseFloat(localStorage.getItem('sys_baseRate')) || 0.50;
         let SYS_COIN_VALUE = parseFloat(localStorage.getItem('sys_coinValue')) || 0.0000001;
-        
-        // MINIMUM WITHDRAWAL = 50 Crore
         let SYS_MIN_WITHDRAW = parseFloat(localStorage.getItem('sys_minWithdraw')) || 500000000; 
 
         // USER BOOST & ADS LOGIC
@@ -605,7 +642,7 @@
             balance -= amount;
             updateAllBalances();
             
-            // Save data to localStorage (Admin Panel can read this array)
+            // Save data to localStorage
             let pendingRequests = JSON.parse(localStorage.getItem('pendingWithdrawals')) || [];
             pendingRequests.push({
                 amount: amount,
@@ -619,11 +656,11 @@
             alert(`✅ Withdrawal Successful!\n\n${amount.toLocaleString()} PRN will be sent to your ${method.toUpperCase()} (${address}) shortly.`);
             
             closeWithdrawModal();
-            document.getElementById('withdrawAddress').value = ""; // Clear input for next time
+            document.getElementById('withdrawAddress').value = ""; // Clear input
         }
 
         // ==========================================
-        // WITHDRAWAL HISTORY SYSTEM (NEW)
+        // WITHDRAWAL HISTORY SYSTEM
         // ==========================================
 
         function openHistoryModal() {
@@ -648,7 +685,6 @@
                 return;
             }
 
-            // Reverse to show newest first
             requests.slice().reverse().forEach(req => {
                 let dateStr = new Date(req.date).toLocaleString('en-IN', { day:'numeric', month:'short', year:'numeric', hour: '2-digit', minute:'2-digit' });
                 let amountStr = parseFloat(req.amount).toLocaleString('en-US');
