@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pro Crypto Miner Elite</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* --- GLOBAL VARIABLES --- */
+        :root {
+            --bg-main: #0b0f19; 
+            --bg-card: rgba(30, 41, 59, 0.7);
+            --bg-input: rgba(15, 23, 42, 0.8);
+            --primary: #00f2fe; 
+            --secondary: #4facfe;
+            --accent: #10b981; 
+            --warning: #f59e0b; 
+            --danger: #ef4444; 
+            --text-main: #ffffff; 
+            --text-muted: #94a3b8;
+            /* Animation speed variables */
+            --radar-speed: 2s;
+            --radar-delay: 0.6s;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg-main); color: var(--text-main); display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden;}
+        
+        .app-container { width: 100%; max-width: 400px; height: 100vh; background: radial-gradient(circle at top, #1a233a 0%, var(--bg-main) 100%); position: relative; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 0 30px rgba(0,0,0,0.8); }
+        
+        /* --- HEADER --- */
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 20px 25px; z-index: 10;}
+        .user-info h2 { font-size: 20px; font-weight: 800; background: -webkit-linear-gradient(right, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .user-info p { font-size: 13px; color: var(--text-muted); font-weight: 600;}
+        .profile-pic { width: 45px; height: 45px; background: linear-gradient(135deg, var(--secondary), var(--primary)); border-radius: 12px; display: flex; justify-content: center; align-items: center; font-size: 18px; box-shadow: 0 4px 15px rgba(0, 242, 254, 0.3); border: 1px solid rgba(255,255,255,0.2);}
+
+        /* Pages System */
+        .page { display: none; flex-direction: column; flex-grow: 1; overflow-y: auto; padding-bottom: 80px; }
+        .page.active { display: flex; animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- MINING PAGE --- */
+        .balance-card { margin: 10px 20px; background: var(--bg-card); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; padding: 25px 20px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        .balance-title { color: var(--text-muted); font-size: 13px; text-transform: uppercase; letter-spacing: 1.5px; }
+        .balance-amount { font-family: 'Space Grotesk', sans-serif; font-size: 36px; font-weight: 700; color: #fff; text-shadow: 0 0 15px rgba(255, 255, 255, 0.2); word-break: break-all;}
+
+        .mining-section { flex-grow: 1; display: flex; justify-content: center; align-items: center; flex-direction: column; position: relative; margin-top: 10px; }
+        .mining-btn-wrapper { position: relative; width: 180px; height: 180px; display: flex; justify-content: center; align-items: center; margin-bottom: 30px; }
+        .pulse-ring { position: absolute; width: 100%; height: 100%; border-radius: 50%; border: 2px solid var(--primary); opacity: 0; }
+        
+        .mining-active .pulse-ring:nth-child(1) { animation: radar var(--radar-speed) infinite linear; }
+        .mining-active .pulse-ring:nth-child(2) { animation: radar var(--radar-speed) infinite linear var(--radar-delay); }
+        
+        @keyframes radar { 0% { transform: scale(0.8); opacity: 0.8; } 100% { transform: scale(1.8); opacity: 0; } }
+
+        .mine-btn { width: 140px; height: 140px; border-radius: 50%; background: linear-gradient(145deg, #1e293b, #0f172a); border: 4px solid #334155; color: white; cursor: pointer; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 5; transition: 0.3s; box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 10px 20px rgba(0,0,0,0.5); }
+        .mine-btn i { font-size: 32px; color: var(--text-muted); margin-bottom: 8px;}
+        .mining-active .mine-btn { border-color: var(--primary); box-shadow: inset 0 0 20px rgba(0, 242, 254, 0.2), 0 0 20px rgba(0, 242, 254, 0.4); }
+        .mining-active .mine-btn i, .mining-active .mine-btn span { color: var(--primary); }
+
+        .stats-grid { display: flex; justify-content: space-between; width: 90%; gap: 10px; margin-bottom: 20px; }
+        .stat-box { flex: 1; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; text-align: center; }
+        .stat-label { font-size: 11px; color: var(--text-muted); }
+        .stat-value { font-family: 'Space Grotesk', sans-serif; font-size: 16px; font-weight: 700; color: var(--accent); }
+
+        .boost-timer-text { font-family: 'Space Grotesk', sans-serif; font-size: 9px; color: var(--warning); margin-top: 3px; height: 12px; font-weight: bold; letter-spacing: 0.5px;}
+
+        .timer { font-family: 'Space Grotesk', sans-serif; color: var(--warning); font-size: 15px; background: rgba(245, 158, 11, 0.1); padding: 8px 20px; border-radius: 20px; border: 1px solid rgba(245, 158, 11, 0.2);}
+        .boost-btn { background: linear-gradient(90deg, #8b5cf6, #d946ef); color: white; border: none; padding: 15px 30px; border-radius: 30px; font-weight: 700; cursor: pointer; margin-top: 25px; box-shadow: 0 10px 20px rgba(217, 70, 239, 0.3); }
+
+        /* --- PROFESSIONAL WALLET PAGE --- */
+        .wallet-container { padding: 10px 25px; }
+        
+        /* HEADER HISTORY BUTTON CSS */
+        .wallet-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+        .wallet-header-title { font-size: 28px; font-weight: 800; color: #fff; margin-bottom: 0; }
+        .history-btn { width: 38px; height: 38px; border-radius: 50%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--primary); font-size: 16px; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.3);}
+        .history-btn:active { transform: scale(0.9); }
+
+        .wallet-subtitle { color: var(--text-muted); font-size: 13px; font-weight: 500; margin-bottom: 20px; }
+        
+        .wallet-card-new { background: linear-gradient(145deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.9)); border: 1px solid rgba(255,255,255,0.08); border-radius: 24px; padding: 30px 20px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 15px 35px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05); }
+        .wallet-label { color: var(--text-muted); font-size: 13px; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; margin-bottom: 8px; }
+        .wallet-main-bal { font-family: 'Space Grotesk', sans-serif; font-size: clamp(28px, 8vw, 42px); font-weight: 800; color: var(--primary); text-shadow: 0 0 20px rgba(0, 242, 254, 0.3); text-align: center; word-break: break-word; line-height: 1.1; }
+        .wallet-prn-text { font-size: 18px; color: var(--text-muted); font-weight: 600; vertical-align: middle; }
+        .wallet-fiat-box { margin-top: 15px; background: rgba(16, 185, 129, 0.1); padding: 8px 20px; border-radius: 20px; border: 1px solid rgba(16, 185, 129, 0.2); display: inline-block; }
+        .wallet-fiat-bal { font-family: 'Space Grotesk', sans-serif; font-size: 18px; font-weight: 700; color: var(--accent); }
+
+        .action-btns { display: flex; gap: 15px; margin-top: 30px; }
+        .action-btns button { flex: 1; padding: 16px; border-radius: 16px; font-size: 15px; font-weight: 700; border: none; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; transition: 0.3s; }
+        .action-btns button:active { transform: scale(0.95); }
+        .withdraw-btn { background: linear-gradient(135deg, #ef4444, #dc2626); color: white; box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3); }
+        .play-game-btn { background: linear-gradient(135deg, var(--warning), #d97706); color: white; box-shadow: 0 8px 20px rgba(245, 158, 11, 0.3); }
+
+        /* --- PLINKO GAME STYLES --- */
+        .game-container { padding: 5px 15px; }
+        .bet-controls { background: var(--bg-card); padding: 12px; border-radius: 15px; margin-bottom: 10px; border: 1px solid rgba(255,255,255,0.05); }
+        .bal-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px; font-weight: 600;}
+        .bal-row span:last-child { color: var(--primary); font-family: 'Space Grotesk', sans-serif; }
+        .bet-input-wrapper { display: flex; background: rgba(0,0,0,0.4); border-radius: 10px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 10px; }
+        .bet-input-wrapper input { flex: 1; background: transparent; border: none; color: white; font-family: 'Space Grotesk', sans-serif; font-size: 15px; padding: 10px; outline: none; font-weight: bold; text-align: center;}
+        .bet-btn-group { display: flex; background: rgba(255,255,255,0.05);}
+        .bet-btn-group button { background: transparent; color: var(--primary); border: none; border-left: 1px solid rgba(255,255,255,0.1); padding: 0 10px; cursor: pointer; font-weight: 700; font-size: 12px; transition: 0.2s; }
+        .ball-selector { width: 100%; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 10px; border-radius: 10px; margin-bottom: 10px; outline: none; font-family: 'Space Grotesk', sans-serif; font-weight: bold; font-size: 14px; cursor: pointer; text-align: center; appearance: none; -webkit-appearance: none; }
+        .ball-selector option { background: var(--bg-main); color: white; }
+        .play-btn { background: var(--secondary); color: white; border: none; padding: 12px; border-radius: 10px; font-weight: bold; font-size: 14px; width: 100%; cursor: pointer; box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4); display: flex; justify-content: center; align-items: center; gap: 8px;}
+        .play-btn:disabled { background: #475569; color: var(--text-muted); cursor: not-allowed; box-shadow: none; }
+        .plinko-area { background: #0f212e; border-radius: 15px; padding: 10px 5px 5px 5px; position: relative; display: flex; flex-direction: column; align-items: center; border: 1px solid rgba(255,255,255,0.05); overflow: hidden; height: 350px; box-shadow: inset 0 0 40px rgba(0,0,0,0.9); }
+        .pegs-container { display: flex; flex-direction: column; align-items: center; width: 100%; height: 85%; position: relative; z-index: 1; justify-content: space-between; padding-top: 15px; }
+        .peg-row { display: flex; justify-content: center; width: 100%; gap: 14px; }
+        .peg { width: 5px; height: 5px; background: #fff; border-radius: 50%; box-shadow: 0 0 4px rgba(255,255,255,0.8); }
+        .ball { width: 10px; height: 10px; background: #ff003f; border-radius: 50%; position: absolute; top: -10px; left: 50%; transform: translateX(-50%); box-shadow: 0 0 10px #ff003f, 0 0 20px #ff003f; z-index: 10; pointer-events: none; }
+        .slots-container { display: flex; width: 100%; gap: 2px; height: 12%; margin-top: auto; z-index: 2; justify-content: center; }
+        .slot { flex: 1; height: 100%; border-radius: 3px; display: flex; justify-content: center; align-items: center; font-size: 8px; font-family: 'Space Grotesk', sans-serif; font-weight: 800; color: rgba(0,0,0,0.7); box-shadow: inset 0 2px 5px rgba(0,0,0,0.4); position: relative; overflow: hidden; }
+        
+        .c-110 { background: #ff003f; color: #fff;} .c-41 { background: #ff3300; } .c-10 { background: #ff6600; } .c-5 { background: #ff9900; } .c-3 { background: #ffcc00; } .c-1_5 { background: #ffff00; } .c-1 { background: #ccff00; } .c-0_5 { background: #99ff00; } .c-0_2 { background: #00ff00; }
+        .game-result { text-align: center; margin-top: 10px; font-size: 16px; font-weight: 800; height: 20px; font-family: 'Space Grotesk', sans-serif; color: var(--text-muted); }
+
+        /* --- MODALS --- */
+        .modal-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 100; display: none; justify-content: center; align-items: center; }
+        .ad-box { background: #1e293b; width: 85%; padding: 25px; border-radius: 20px; border: 1px solid var(--primary); text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.9); }
+        .ad-box h3 { color: white; margin-bottom: 5px; font-size: 18px; }
+        .ad-progress-text { font-size: 13px; color: var(--primary); font-weight: bold; margin-bottom: 10px; font-family: 'Space Grotesk', sans-serif;}
+        .ad-video-mockup { width: 100%; height: 150px; background: #0f172a; border-radius: 10px; margin: 15px 0; display: flex; justify-content: center; align-items: center; flex-direction: column; border: 1px dashed #475569; }
+        .spinner { width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.1); border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 10px;}
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .ad-timer { font-family: 'Space Grotesk', sans-serif; color: var(--warning); font-size: 20px; font-weight: bold; margin-bottom: 15px; }
+        .skip-ad-btn { background: #475569; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; width: 100%; cursor: not-allowed; transition: 0.3s; }
+        .skip-ad-btn.ready { background: var(--accent); cursor: pointer; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);}
+
+        /* WITHDRAW MODAL */
+        .withdraw-box { background: #1e293b; width: 90%; max-width: 350px; padding: 25px; border-radius: 24px; border: 1px solid var(--secondary); text-align: left; box-shadow: 0 10px 40px rgba(0,0,0,0.9); display: flex; flex-direction: column; gap: 15px; }
+        .withdraw-box h3 { color: white; font-size: 20px; text-align: center; margin-bottom: 5px; }
+        .withdraw-info { text-align: center; font-size: 14px; color: var(--accent); font-weight: bold; margin-bottom: 10px; font-family: 'Space Grotesk', sans-serif; background: rgba(16, 185, 129, 0.1); padding: 8px; border-radius: 10px;}
+        .input-group { display: flex; flex-direction: column; gap: 6px; }
+        .input-group label { font-size: 13px; color: var(--text-muted); font-weight: 600; }
+        .input-group select, .input-group input { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.5); color: white; font-family: 'Space Grotesk', sans-serif; font-size: 15px; outline: none; transition: 0.3s; }
+        .input-group select option { background: var(--bg-main); color: white; }
+        .input-group select:focus, .input-group input:focus { border-color: var(--primary); box-shadow: 0 0 10px rgba(0, 242, 254, 0.2); }
+        .modal-action-btns { display: flex; gap: 10px; margin-top: 15px; }
+        .modal-action-btns button { flex: 1; padding: 14px; border-radius: 12px; font-weight: 800; border: none; cursor: pointer; transition: 0.3s; font-size: 14px; }
+        .cancel-btn { background: #334155; color: white; }
+        .confirm-btn { background: linear-gradient(135deg, var(--accent), #059669); color: white; box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3); }
+
+        /* --- HISTORY LIST CSS --- */
+        .history-item { background: rgba(0,0,0,0.4); padding: 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; gap: 6px; }
+        .hist-row { display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
+        .hist-date { color: var(--text-muted); font-size: 12px; }
+        .hist-amount { color: white; font-family: 'Space Grotesk', sans-serif; font-weight: bold; font-size: 16px;}
+        .hist-status { font-weight: bold; font-size: 11px; padding: 4px 10px; border-radius: 12px; font-family: 'Space Grotesk', sans-serif; }
+        .status-pending { background: rgba(245, 158, 11, 0.1); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.2);}
+        .status-approved { background: rgba(16, 185, 129, 0.1); color: var(--accent); border: 1px solid rgba(16, 185, 129, 0.2);}
+        .status-rejected { background: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.2);}
+
+        /* --- BOTTOM NAV --- */
+        .bottom-nav { display: flex; justify-content: space-around; background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(10px); padding: 15px 0 25px 0; border-top: 1px solid rgba(255,255,255,0.05); position: absolute; bottom: 0; width: 100%; z-index: 10; }
+        .nav-item { text-align: center; color: var(--text-muted); cursor: pointer; width: 33%; }
+        .nav-item i { font-size: 22px; margin-bottom: 6px; transition: 0.3s;}
+        .nav-item span { display: block; font-size: 11px; }
+        .nav-item.active { color: var(--primary); }
+        .nav-item.active i { transform: translateY(-3px); text-shadow: 0 0 10px rgba(0, 242, 254, 0.5);}
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- HEADER -->
+        <div class="header">
+            <div class="user-info"><h2>Pro Network</h2><p>Elite Miner</p></div>
+            <div class="profile-pic"><i class="fa-solid fa-gem"></i></div>
+        </div>
+
+        <!-- PAGE 1: HOME -->
+        <div id="homePage" class="page active">
+            <div class="balance-card">
+                <div class="balance-title">Current Balance</div>
+                <div class="balance-amount" id="homeBalanceDisplay">0.0000</div>
+            </div>
+            <div class="mining-section" id="miningSection">
+                <div class="mining-btn-wrapper">
+                    <div class="pulse-ring"></div><div class="pulse-ring"></div>
+                    <button class="mine-btn" id="mineButton" onclick="startMining()">
+                        <i class="fa-solid fa-power-off"></i><span id="btnText">START</span>
+                    </button>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-label">Base Rate</div>
+                        <div class="stat-value" id="baseRateDisplay">0.50/hr</div> 
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Ad Boost</div>
+                        <div class="stat-value" id="boostRateDisplay">+0.00/hr</div>
+                        <div class="boost-timer-text" id="boostTimerDisplay"></div> 
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Total Rate</div>
+                        <div class="stat-value total" id="totalRateDisplay">0.50/hr</div>
+                    </div>
+                </div>
+                <div class="timer" id="timerDisplay">SYSTEM STANDBY</div>
+                <button class="boost-btn" onclick="watchAdToBoost()">Boost Rate (+0.10/hr)</button>
+            </div>
+        </div>
+
+        <!-- PAGE 2: WALLET -->
+        <div id="walletPage" class="page">
+            <div class="wallet-container">
+                <!-- WALLET HEADER WITH HISTORY BUTTON -->
+                <div class="wallet-header-row">
+                    <h2 class="wallet-header-title">My Wallet</h2>
+                    <button class="history-btn" onclick="openHistoryModal()"><i class="fa-solid fa-clock-rotate-left"></i></button>
+                </div>
+
+                <p class="wallet-subtitle" id="conversionText">Conversion: 1 PRN = ₹0.0000001</p> 
+                
+                <div class="wallet-card-new">
+                    <div class="wallet-label">Total Balance</div>
+                    <div class="wallet-main-bal" id="walletCoinDisplay">
+                        0.0000 <span class="wallet-prn-text">PRN</span>
+                    </div>
+                    <div class="wallet-fiat-box">
+                        <div class="wallet-fiat-bal" id="walletINRDisplay">≈ ₹0.00</div>
+                    </div>
+                </div>
+
+                <div class="action-btns">
+                    <button class="withdraw-btn" onclick="openWithdrawModal()"><i class="fa-solid fa-money-bill-transfer"></i> Withdraw</button>
+                    <button class="play-game-btn" onclick="switchTab('gamePage')"><i class="fa-solid fa-dice"></i> Casino</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 3: GAME -->
+        <div id="gamePage" class="page">
+            <div class="game-container">
+                <div class="bet-controls">
+                    <div class="bal-row">
+                        <span style="color: var(--text-muted)">Wallet Balance</span>
+                        <span id="gameBalDisplay">100.00</span>
+                    </div>
+                    <div class="bet-input-wrapper">
+                        <input type="number" id="betAmount" value="10.00" min="1" oninput="updateDropBtnText()">
+                        <div class="bet-btn-group">
+                            <button onclick="modifyBet(0.5)">½</button>
+                            <button onclick="modifyBet(2)">2×</button>
+                            <button onclick="modifyBet('max')">MAX</button>
+                        </div>
+                    </div>
+                    <select class="ball-selector" id="ballCountSelect" onchange="updateDropBtnText()">
+                        <option value="1">Drop 1 Ball (Cost: 1 Ad)</option>
+                        <option value="5">Drop 5 Balls (Cost: 1 Ad) 🔥</option>
+                        <option value="8">Drop 8 Balls (Cost: 2 Ads)</option>
+                        <option value="20">Drop 20 Balls (Cost: 5 Ads) 🚀</option>
+                    </select>
+                    <button class="play-btn" id="dropBtn" onclick="prepareGame()">
+                        <i class="fa-solid fa-play"></i> <span id="btnMainText">Play (Watch 1 Ad)</span>
+                    </button>
+                </div>
+
+                <div class="plinko-area" id="board">
+                    <div class="pegs-container" id="pegsContainer"></div>
+                    <div class="slots-container">
+                        <div class="slot c-110">110</div><div class="slot c-41">41</div><div class="slot c-10">10</div><div class="slot c-5">5</div>
+                        <div class="slot c-3">3</div><div class="slot c-1_5">1.5</div><div class="slot c-1">1</div><div class="slot c-0_5">0.5</div>
+                        <div class="slot c-0_2">0.2</div>
+                        <div class="slot c-0_5">0.5</div><div class="slot c-1">1</div><div class="slot c-1_5">1.5</div><div class="slot c-3">3</div>
+                        <div class="slot c-5">5</div><div class="slot c-10">10</div><div class="slot c-41">41</div><div class="slot c-110">110</div>
+                    </div>
+                </div>
+
+                <div class="game-result" id="gameResultText">Set your bet & drop!</div>
+            </div>
+        </div>
+
+        <!-- AD MODAL -->
+        <div class="modal-overlay" id="adModal">
+            <div class="ad-box">
+                <h3><i class="fa-solid fa-video" style="color:var(--primary);"></i> Watch Ads to Play</h3>
+                <div class="ad-progress-text" id="adProgressText">Ad 1 of 1</div>
+                <div class="ad-video-mockup">
+                    <div class="spinner"></div>
+                    <span style="color: var(--text-muted); font-size: 12px; margin-top: 5px;">Playing Video...</span>
+                </div>
+                <div class="ad-timer" id="adCountdown">3s</div>
+                <button class="skip-ad-btn" id="claimAdBtn" disabled onclick="handleAdNext()">Please Wait...</button>
+            </div>
+        </div>
+
+        <!-- WITHDRAW MODAL -->
+        <div class="modal-overlay" id="withdrawModal">
+            <div class="withdraw-box">
+                <h3>Withdraw Funds</h3>
+                <div class="withdraw-info" id="withdrawAvailBal">Available: 0.00 PRN</div>
+
+                <div class="input-group">
+                    <label>Select Method</label>
+                    <select id="withdrawMethod" onchange="updateWithdrawInput()">
+                        <option value="upi">UPI (India Only)</option>
+                        <option value="ton">TON Wallet (Crypto)</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label id="withdrawLabel">Enter UPI ID</label>
+                    <input type="text" id="withdrawAddress" placeholder="e.g. name@okhdfcbank">
+                </div>
+
+                <div class="input-group">
+                    <label>Amount (PRN)</label>
+                    <input type="number" id="withdrawAmount" placeholder="Min 500,000,000">
+                </div>
+
+                <div class="modal-action-btns">
+                    <button class="cancel-btn" onclick="closeWithdrawModal()">Cancel</button>
+                    <button class="confirm-btn" onclick="processWithdrawal()">Submit</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- HISTORY MODAL (NEW) -->
+        <div class="modal-overlay" id="historyModal">
+            <div class="withdraw-box" style="max-height: 80vh; display: flex; flex-direction: column;">
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px;">
+                    <h3 style="margin: 0; font-size: 18px;"><i class="fa-solid fa-clock-rotate-left" style="color: var(--primary);"></i> History</h3>
+                    <button onclick="closeHistoryModal()" style="background: none; border: none; color: white; font-size: 22px; cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div id="historyList" style="overflow-y: auto; flex-grow: 1; display: flex; flex-direction: column; gap: 10px; padding-top: 10px;">
+                    <!-- History items will be injected here by JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <div class="nav-item active" onclick="switchTab('homePage', this)"><i class="fa-solid fa-microchip"></i><span>Mine</span></div>
+            <div class="nav-item" onclick="switchTab('walletPage', this)"><i class="fa-solid fa-wallet"></i><span>Wallet</span></div>
+            <div class="nav-item" onclick="switchTab('gamePage', this)"><i class="fa-solid fa-gamepad"></i><span>Game</span></div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- FIREBASE INITIALIZATION SCRIPT (CDN BASED) -->
+    <!-- ========================================== -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-analytics.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDbvONjiKgqYfYwKIkUusXb7vf0r3jLrnA",
+            authDomain: "video-spp.firebaseapp.com",
+            databaseURL: "https://video-spp-default-rtdb.firebaseio.com",
+            projectId: "video-spp",
+            storageBucket: "video-spp.firebasestorage.app",
+            messagingSenderId: "383033368244",
+            appId: "1:383033368244:web:fbbad9cd538a275fefc1e1",
+            measurementId: "G-RT80D7H4R2"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        console.log("Firebase Initialized!");
+    </script>
+
+    <!-- ========================================== -->
+    <!-- MAIN GAME LOGIC                            -->
+    <!-- ========================================== -->
+    <script>
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        let audioCtx;
+
+        function initAudio() { if(!audioCtx) audioCtx = new AudioContext(); if(audioCtx.state === 'suspended') audioCtx.resume(); }
+
+        function playTone(freq, type, duration, vol) {
+            if(!audioCtx) return;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = type; osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(); osc.stop(audioCtx.currentTime + duration);
+        }
+
+        function soundClick() { initAudio(); playTone(400, 'sine', 0.1, 0.1); }
+        function soundPlink() { initAudio(); playTone(900 + Math.random()*200, 'triangle', 0.05, 0.01); } 
+        function soundWin() { initAudio(); playTone(500, 'square', 0.1, 0.1); setTimeout(()=>playTone(800, 'square', 0.2, 0.1), 100); }
+        function soundLose() { initAudio(); playTone(200, 'sawtooth', 0.3, 0.1); }
+
+        // ==========================================
+        // ADMIN PANEL VARIABLES & USER DATA INTEGRATION
+        // ==========================================
+        let balance = parseFloat(localStorage.getItem('userBalance')) || 100.0000;
+        let isMining = localStorage.getItem('isMining') === 'true';
+        let miningEndTime = parseInt(localStorage.getItem('miningEndTime')) || 0;
+        
+        // ADMIN SETTINGS
+        let SYS_BASE_RATE = parseFloat(localStorage.getItem('sys_baseRate')) || 0.50;
+        let SYS_COIN_VALUE = parseFloat(localStorage.getItem('sys_coinValue')) || 0.0000001;
+        
+        // MINIMUM WITHDRAWAL = 50 Crore
+        let SYS_MIN_WITHDRAW = parseFloat(localStorage.getItem('sys_minWithdraw')) || 500000000; 
+
+        // USER BOOST & ADS LOGIC
+        let boostRatePerHour = parseFloat(localStorage.getItem('userBoostRate')) || 0.00;
+        let boostEndTime = parseInt(localStorage.getItem('boostEndTime')) || 0;
+        let totalAdsWatched = parseInt(localStorage.getItem('sys_totalAds')) || 0; 
+        
+        let totalRatePerHour = SYS_BASE_RATE + boostRatePerHour; 
+        let ratePerSecond = totalRatePerHour / 3600;
+        let miningInterval, timerInterval;
+
+        function updateRadarSpeed() {
+            let boostCount = boostRatePerHour / 0.10;
+            let newSpeed = 2.0 - (boostCount * 0.15);
+            if (newSpeed < 0.3) newSpeed = 0.3; 
+            let newDelay = newSpeed * 0.3; 
+            document.documentElement.style.setProperty('--radar-speed', newSpeed + 's');
+            document.documentElement.style.setProperty('--radar-delay', newDelay + 's');
+        }
+
+        function checkAndUpdateBoostTimer() {
+            let now = new Date().getTime();
+            let timerDisplay = document.getElementById('boostTimerDisplay');
+
+            if (boostRatePerHour > 0 && now > boostEndTime) {
+                boostRatePerHour = 0.00;
+                totalRatePerHour = SYS_BASE_RATE; 
+                ratePerSecond = totalRatePerHour / 3600;
+                
+                localStorage.setItem('userBoostRate', '0');
+                localStorage.setItem('boostEndTime', '0');
+                
+                document.getElementById('boostRateDisplay').innerText = `+0.00/hr`;
+                document.getElementById('totalRateDisplay').innerText = `${totalRatePerHour.toFixed(2)}/hr`;
+                timerDisplay.innerText = ""; 
+                
+                updateRadarSpeed(); 
+            } 
+            else if (boostRatePerHour > 0 && now <= boostEndTime) {
+                let d = boostEndTime - now;
+                let h = Math.floor((d % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                let m = Math.floor((d % (1000 * 60 * 60)) / (1000 * 60));
+                let s = Math.floor((d % (1000 * 60)) / 1000);
+                timerDisplay.innerText = `${h}h ${m}m ${s}s left`;
+            } else {
+                timerDisplay.innerText = "";
+            }
+        }
+
+        function initApp() {
+            checkAndUpdateBoostTimer();
+            setInterval(checkAndUpdateBoostTimer, 1000);
+
+            document.getElementById('baseRateDisplay').innerText = `${SYS_BASE_RATE.toFixed(2)}/hr`;
+            document.getElementById('conversionText').innerText = `Conversion: 1 PRN = ₹${SYS_COIN_VALUE}`;
+            
+            updateAllBalances();
+            document.getElementById('boostRateDisplay').innerText = `+${boostRatePerHour.toFixed(2)}/hr`;
+            document.getElementById('totalRateDisplay').innerText = `${totalRatePerHour.toFixed(2)}/hr`;
+            
+            updateRadarSpeed(); 
+            generatePyramid(); 
+            updateDropBtnText();
+            
+            if (isMining && new Date().getTime() < miningEndTime) resumeMining();
+            else stopMining();
+            document.body.addEventListener('click', () => { initAudio(); }, {once:true});
+        }
+
+        function updateAllBalances() {
+            localStorage.setItem('userBalance', balance);
+            let formattedHomeBal = balance.toLocaleString('en-US', { minimumFractionDigits: 4, maximumFractionDigits: 4 });
+            let formattedGameBal = balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            
+            let inrValue = (balance * SYS_COIN_VALUE);
+            let formattedINR = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2, maximumFractionDigits: 8 }).format(inrValue);
+
+            document.getElementById('homeBalanceDisplay').innerText = formattedHomeBal;
+            document.getElementById('walletCoinDisplay').innerHTML = `${formattedHomeBal} <span class="wallet-prn-text">PRN</span>`;
+            document.getElementById('walletINRDisplay').innerText = `≈ ${formattedINR}`;
+            document.getElementById('gameBalDisplay').innerText = formattedGameBal;
+        }
+
+        function switchTab(pageId, navElement) {
+            soundClick();
+            document.querySelectorAll('.page, .nav-item').forEach(e => e.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            if(navElement) navElement.classList.add('active'); 
+            else if(pageId === 'gamePage') document.querySelectorAll('.nav-item')[2].classList.add('active');
+        }
+
+        function startMining() {
+            soundClick();
+            if (isMining) return;
+            isMining = true; localStorage.setItem('isMining', 'true');
+            miningEndTime = new Date().getTime() + (24*60*60*1000); localStorage.setItem('miningEndTime', miningEndTime);
+            resumeMining();
+        }
+        function resumeMining() {
+            document.getElementById('miningSection').classList.add('mining-active'); document.getElementById('btnText').innerText = "MINING";
+            miningInterval = setInterval(() => { balance += ratePerSecond; updateAllBalances(); }, 1000);
+            timerInterval = setInterval(() => {
+                let d = miningEndTime - new Date().getTime();
+                if (d <= 0) stopMining();
+                else {
+                    let h=Math.floor((d%(1000*60*60*24))/(1000*60*60)), m=Math.floor((d%(1000*60*60))/(1000*60)), s=Math.floor((d%(1000*60))/1000);
+                    document.getElementById('timerDisplay').innerText = `${h<10?'0'+h:h}:${m<10?'0'+m:m}:${s<10?'0'+s:s} REMAINING`;
+                }
+            }, 1000);
+        }
+        function stopMining() {
+            isMining = false; localStorage.setItem('isMining', 'false');
+            clearInterval(miningInterval); clearInterval(timerInterval);
+            document.getElementById('miningSection').classList.remove('mining-active'); document.getElementById('btnText').innerText = "START";
+            document.getElementById('timerDisplay').innerText = "SYSTEM STANDBY";
+        }
+
+        function watchAdToBoost() {
+            soundClick();
+            if(confirm("Watch Ad to boost mining speed by +0.10/hr for 7 HOURS?")) {
+                setTimeout(() => {
+                    boostRatePerHour += 0.10; 
+                    totalRatePerHour = SYS_BASE_RATE + boostRatePerHour; 
+                    ratePerSecond = totalRatePerHour/3600;
+                    boostEndTime = new Date().getTime() + (7 * 60 * 60 * 1000); 
+                    
+                    totalAdsWatched++; 
+                    localStorage.setItem('sys_totalAds', totalAdsWatched);
+
+                    localStorage.setItem('userBoostRate', boostRatePerHour);
+                    localStorage.setItem('boostEndTime', boostEndTime);
+
+                    document.getElementById('boostRateDisplay').innerText = `+${boostRatePerHour.toFixed(2)}/hr`;
+                    document.getElementById('totalRateDisplay').innerText = `${totalRatePerHour.toFixed(2)}/hr`;
+                    
+                    updateRadarSpeed(); 
+                    checkAndUpdateBoostTimer(); 
+                    
+                }, 1500);
+            }
+        }
+
+        // ==========================================
+        // WITHDRAWAL SYSTEM (UPI & TON WALLET)
+        // ==========================================
+
+        function openWithdrawModal() {
+            soundClick();
+            document.getElementById('withdrawAvailBal').innerText = `Available: ${balance.toLocaleString('en-US', {maximumFractionDigits: 2})} PRN`;
+            
+            let inputField = document.getElementById('withdrawAmount');
+            if(balance >= SYS_MIN_WITHDRAW) {
+                inputField.value = Math.floor(balance);
+            } else {
+                inputField.value = "";
+            }
+            inputField.placeholder = `Min: ${SYS_MIN_WITHDRAW.toLocaleString()}`;
+
+            document.getElementById('withdrawModal').style.display = 'flex';
+        }
+
+        function closeWithdrawModal() {
+            soundClick();
+            document.getElementById('withdrawModal').style.display = 'none';
+        }
+
+        function updateWithdrawInput() {
+            const method = document.getElementById('withdrawMethod').value;
+            const label = document.getElementById('withdrawLabel');
+            const input = document.getElementById('withdrawAddress');
+            
+            if (method === 'upi') {
+                label.innerText = "Enter UPI ID";
+                input.placeholder = "e.g. name@okhdfcbank";
+            } else {
+                label.innerText = "Enter TON Wallet Address";
+                input.placeholder = "e.g. UQ... or EQ...";
+            }
+        }
+
+        function processWithdrawal() {
+            soundClick();
+            const amountStr = document.getElementById('withdrawAmount').value;
+            const amount = parseFloat(amountStr);
+            const address = document.getElementById('withdrawAddress').value.trim();
+            const method = document.getElementById('withdrawMethod').value;
+
+            if (isNaN(amount) || amount < SYS_MIN_WITHDRAW) {
+                alert(`Minimum withdrawal is ${SYS_MIN_WITHDRAW.toLocaleString()} PRN! You don't have enough balance.`);
+                return;
+            }
+            if (amount > balance) {
+                alert("Insufficient balance! You are trying to withdraw more than you have.");
+                return;
+            }
+            if (address === "") {
+                alert(`Please enter your ${method === 'upi' ? 'UPI ID' : 'TON Wallet Address'}!`);
+                return;
+            }
+
+            // Deduct Balance
+            balance -= amount;
+            updateAllBalances();
+            
+            // Save data to localStorage (Admin Panel can read this array)
+            let pendingRequests = JSON.parse(localStorage.getItem('pendingWithdrawals')) || [];
+            pendingRequests.push({
+                amount: amount,
+                method: method.toUpperCase(),
+                address: address,
+                date: new Date().getTime(),
+                status: 'Pending'
+            });
+            localStorage.setItem('pendingWithdrawals', JSON.stringify(pendingRequests));
+
+            alert(`✅ Withdrawal Successful!\n\n${amount.toLocaleString()} PRN will be sent to your ${method.toUpperCase()} (${address}) shortly.`);
+            
+            closeWithdrawModal();
+            document.getElementById('withdrawAddress').value = ""; // Clear input for next time
+        }
+
+        // ==========================================
+        // WITHDRAWAL HISTORY SYSTEM (NEW)
+        // ==========================================
+
+        function openHistoryModal() {
+            soundClick();
+            loadHistoryData();
+            document.getElementById('historyModal').style.display = 'flex';
+        }
+
+        function closeHistoryModal() {
+            soundClick();
+            document.getElementById('historyModal').style.display = 'none';
+        }
+
+        function loadHistoryData() {
+            const historyList = document.getElementById('historyList');
+            let requests = JSON.parse(localStorage.getItem('pendingWithdrawals')) || [];
+            
+            historyList.innerHTML = "";
+
+            if (requests.length === 0) {
+                historyList.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 30px 10px; font-size: 14px;">No withdrawal history found.</div>`;
+                return;
+            }
+
+            // Reverse to show newest first
+            requests.slice().reverse().forEach(req => {
+                let dateStr = new Date(req.date).toLocaleString('en-IN', { day:'numeric', month:'short', year:'numeric', hour: '2-digit', minute:'2-digit' });
+                let amountStr = parseFloat(req.amount).toLocaleString('en-US');
+                
+                let statusClass = "status-pending";
+                let icon = '<i class="fa-solid fa-clock"></i>';
+                
+                if (req.status === 'Approved') {
+                    statusClass = "status-approved";
+                    icon = '<i class="fa-solid fa-check"></i>';
+                } else if (req.status === 'Rejected') {
+                    statusClass = "status-rejected";
+                    icon = '<i class="fa-solid fa-xmark"></i>';
+                }
+
+                let item = `
+                    <div class="history-item">
+                        <div class="hist-row">
+                            <span class="hist-amount">${amountStr} <span style="font-size: 12px; color: var(--text-muted);">PRN</span></span>
+                            <span class="hist-status ${statusClass}">${icon} ${req.status}</span>
+                        </div>
+                        <div class="hist-row" style="margin-top: 5px;">
+                            <span style="color: var(--primary); font-weight: bold; font-size: 12px;">${req.method}</span>
+                            <span class="hist-date">${dateStr}</span>
+                        </div>
+                        <div style="font-family: monospace; color: var(--text-muted); font-size: 11px; margin-top: 5px; word-break: break-all; background: rgba(0,0,0,0.3); padding: 5px; border-radius: 5px;">
+                            ${req.address}
+                        </div>
+                    </div>
+                `;
+                historyList.innerHTML += item;
+            });
+        }
+
+        // ==========================================
+        // PLINKO GAME LOGIC
+        // ==========================================
+
+        const adRequirements = { "1": 1, "5": 1, "8": 2, "20": 5 };
+        const slotsMultiplier = [110, 41, 10, 5, 3, 1.5, 1, 0.5, 0.2, 0.5, 1, 1.5, 3, 5, 10, 41, 110];
+        
+        let isGameRunning = false; 
+        let currentBet = 0;
+        let ballsToDrop = 0;
+        let activeBallsCount = 0;
+        let totalWinForRound = 0;
+
+        let totalAdsNeeded = 0;
+        let currentAdIndex = 1;
+
+        function generatePyramid() {
+            const container = document.getElementById('pegsContainer');
+            container.innerHTML = '';
+            for(let r=3; r<=18; r++) { 
+                let row = document.createElement('div');
+                row.className = 'peg-row';
+                for(let p=0; p<r; p++) { let peg = document.createElement('div'); peg.className = 'peg'; row.appendChild(peg); }
+                container.appendChild(row);
+            }
+        }
+
+        function modifyBet(action) {
+            soundClick();
+            let input = document.getElementById('betAmount');
+            let val = parseFloat(input.value) || 0;
+            if(action === 'max') input.value = balance.toFixed(2);
+            else input.value = Math.max(1, (val * action)).toFixed(2);
+            updateDropBtnText();
+        }
+
+        function updateDropBtnText() {
+            let balls = document.getElementById('ballCountSelect').value;
+            let ads = adRequirements[balls];
+            let bet = parseFloat(document.getElementById('betAmount').value) || 0;
+            let totalCost = (bet * balls).toFixed(2);
+            document.getElementById('btnMainText').innerText = `Play ₹${totalCost} (Watch ${ads} Ad${ads>1?'s':''})`;
+        }
+
+        function prepareGame() {
+            if (isGameRunning) return;
+            soundClick();
+            ballsToDrop = parseInt(document.getElementById('ballCountSelect').value);
+            currentBet = parseFloat(document.getElementById('betAmount').value);
+            let totalCost = currentBet * ballsToDrop;
+
+            if (isNaN(currentBet) || currentBet <= 0) { alert("Invalid Bet!"); return; }
+            if (totalCost > balance) { alert(`Insufficient Balance! You need ${totalCost.toFixed(2)} PRN for ${ballsToDrop} balls.`); return; }
+            
+            totalAdsNeeded = adRequirements[ballsToDrop];
+            currentAdIndex = 1;
+            showAdVideo();
+        }
+
+        function showAdVideo() {
+            const modal = document.getElementById('adModal');
+            const timerText = document.getElementById('adCountdown');
+            const btn = document.getElementById('claimAdBtn');
+            const progressText = document.getElementById('adProgressText');
+            
+            modal.style.display = 'flex'; 
+            btn.disabled = true; 
+            btn.classList.remove('ready'); 
+            btn.innerText = "Please Wait...";
+            progressText.innerText = `Watching Ad ${currentAdIndex} of ${totalAdsNeeded}`;
+            
+            let timeLeft = 3; 
+            timerText.innerText = `${timeLeft}s`;
+            
+            let adInterval = setInterval(() => {
+                timeLeft--; timerText.innerText = `${timeLeft}s`;
+                if(timeLeft <= 0) {
+                    clearInterval(adInterval);
+                    timerText.innerText = "Ready!"; 
+                    btn.disabled = false; 
+                    btn.classList.add('ready'); 
+                    
+                    if(currentAdIndex < totalAdsNeeded) {
+                        btn.innerText = "Watch Next Ad";
+                    } else {
+                        btn.innerText = "Drop Balls Now!";
+                    }
+                }
+            }, 1000);
+        }
+
+        function handleAdNext() {
+            soundClick();
+            if (currentAdIndex < totalAdsNeeded) {
+                currentAdIndex++;
+                showAdVideo(); 
+            } else {
+                document.getElementById('adModal').style.display = 'none';
+                startBallStream(); 
+            }
+        }
+
+        function startBallStream() {
+            let totalCost = currentBet * ballsToDrop;
+            balance -= totalCost; 
+
+            totalAdsWatched += totalAdsNeeded;
+            localStorage.setItem('sys_totalAds', totalAdsWatched);
+
+            updateAllBalances();
+            
+            isGameRunning = true; 
+            document.getElementById('dropBtn').disabled = true;
+            document.getElementById('gameResultText').innerText = `Dropping ${ballsToDrop} Balls...`;
+            document.getElementById('gameResultText').style.color = "var(--text-muted)";
+            
+            totalWinForRound = 0;
+            activeBallsCount = ballsToDrop;
+
+            for(let i = 0; i < ballsToDrop; i++) {
+                setTimeout(() => { spawnAndAnimateBall(); }, i * 250); 
+            }
+        }
+
+        function spawnAndAnimateBall() {
+            const board = document.getElementById('board');
+            const ball = document.createElement('div');
+            ball.className = 'ball';
+            board.appendChild(ball);
+
+            let keyframes = [];
+            let currentLeft = 50; 
+            let currentTop = 1; 
+            let topStep = 83 / 16; 
+            
+            keyframes.push({ left: `${currentLeft}%`, top: `${currentTop}%` });
+            
+            let rightCount = 0;   
+            let bounceTiming = [];
+
+            for(let i=1; i<=16; i++) {
+                let goRight = Math.random() > 0.5; 
+                if (goRight) rightCount++;
+                let nextLeft = currentLeft + (goRight ? 2.8 : -2.8); 
+                let nextTop = currentTop + topStep; 
+
+                keyframes.push({ left: `${(currentLeft + nextLeft) / 2}%`, top: `${currentTop + (topStep * 0.1)}%`, easing: 'ease-out' });
+                keyframes.push({ left: `${nextLeft}%`, top: `${nextTop}%`, easing: 'ease-in' });
+
+                currentLeft = nextLeft; currentTop = nextTop;
+                bounceTiming.push(i * 180); 
+            }
+            
+            keyframes.push({ left: `${currentLeft}%`, top: `94%`, easing: 'ease-in' });
+            const animationTime = 16 * 180; 
+            let anim = ball.animate(keyframes, { duration: animationTime, fill: 'forwards' });
+
+            bounceTiming.forEach(time => { setTimeout(soundPlink, time); });
+
+            setTimeout(() => {
+                let mult = slotsMultiplier[rightCount]; 
+                let win = currentBet * mult; 
+                
+                balance += win; 
+                totalWinForRound += win;
+                updateAllBalances();
+                
+                if(mult >= 1.5) soundWin();
+                else if(mult < 1) soundLose();
+
+                ball.remove();
+                activeBallsCount--;
+
+                if(activeBallsCount === 0) {
+                    finishRound();
+                } else {
+                    document.getElementById('gameResultText').innerText = `Live Win: +${totalWinForRound.toFixed(2)}`;
+                    document.getElementById('gameResultText').style.color = "var(--primary)";
+                }
+            }, animationTime + 100);
+        }
+
+        function finishRound() {
+            const resultText = document.getElementById('gameResultText');
+            let totalSpent = currentBet * ballsToDrop;
+            let netProfit = totalWinForRound - totalSpent;
+
+            if (netProfit > 0) {
+                resultText.innerText = `Massive Win! +${netProfit.toFixed(2)} Profit`;
+                resultText.style.color = "var(--accent)";
+            } else if (netProfit < 0) {
+                resultText.innerText = `Round Over. Loss: ${Math.abs(netProfit).toFixed(2)}`;
+                resultText.style.color = "var(--danger)";
+            } else {
+                resultText.innerText = `Round Over. Broke Even.`;
+                resultText.style.color = "var(--warning)";
+            }
+            isGameRunning = false; 
+            document.getElementById('dropBtn').disabled = false;
+        }
+
+        initApp();
+    </script>
+</body>
+</html>
