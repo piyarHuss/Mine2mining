@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pro Crypto Miner Elite</title>
     
-    <!-- TELEGRAM WEB APP SDK (Yeh add karna zaroori tha) -->
+    <!-- TELEGRAM WEB APP SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
@@ -39,7 +39,12 @@
         .header { display: flex; justify-content: space-between; align-items: center; padding: 20px 25px; z-index: 10;}
         .user-info h2 { font-size: 20px; font-weight: 800; background: -webkit-linear-gradient(right, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .user-info p { font-size: 13px; color: var(--text-muted); font-weight: 600;}
-        .profile-pic { width: 45px; height: 45px; background: linear-gradient(135deg, var(--secondary), var(--primary)); border-radius: 12px; display: flex; justify-content: center; align-items: center; font-size: 18px; box-shadow: 0 4px 15px rgba(0, 242, 254, 0.3); border: 1px solid rgba(255,255,255,0.2);}
+        
+        /* Updated Profile Section CSS */
+        .header-right { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
+        .profile-pic { width: 45px; height: 45px; background: linear-gradient(135deg, var(--secondary), var(--primary)); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 18px; box-shadow: 0 4px 15px rgba(0, 242, 254, 0.4); border: 2px solid var(--primary); overflow: hidden;}
+        .profile-pic img { width: 100%; height: 100%; object-fit: cover; }
+        .user-name { font-size: 12px; font-weight: 700; color: #fff; font-family: 'Space Grotesk', sans-serif; text-align: center; max-width: 70px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: 0 0 5px rgba(0, 242, 254, 0.5);}
 
         /* Pages System */
         .page { display: none; flex-direction: column; flex-grow: 1; overflow-y: auto; padding-bottom: 80px; }
@@ -186,10 +191,18 @@
 <body>
 
     <div class="app-container">
-        <!-- HEADER -->
+        <!-- HEADER (Updated with Telegram Profile & Name) -->
         <div class="header">
-            <div class="user-info"><h2>Pro Network</h2><p>Elite Miner</p></div>
-            <div class="profile-pic"><i class="fa-solid fa-gem"></i></div>
+            <div class="user-info">
+                <h2>Pro Network</h2>
+                <p>Elite Miner</p>
+            </div>
+            <div class="header-right">
+                <div class="profile-pic" id="userProfilePic">
+                    <i class="fa-solid fa-gem"></i> <!-- Fallback Icon -->
+                </div>
+                <div class="user-name" id="userNameDisplay">Miner</div>
+            </div>
         </div>
 
         <!-- PAGE 1: HOME -->
@@ -403,9 +416,24 @@
     <!-- MAIN GAME LOGIC                            -->
     <!-- ========================================== -->
     <script>
-        // Init Telegram Web App (Taki Ads code sahi se chale)
-        if (window.Telegram && window.Telegram.WebApp) {
-            window.Telegram.WebApp.ready();
+        // Init Telegram Web App Data
+        function fetchTelegramUserData() {
+            if (window.Telegram && window.Telegram.WebApp) {
+                const tg = window.Telegram.WebApp;
+                tg.ready();
+                tg.expand(); // Good practice
+
+                const tgUser = tg.initDataUnsafe?.user;
+                if (tgUser) {
+                    // Update First Name
+                    document.getElementById('userNameDisplay').innerText = tgUser.first_name || "Miner";
+                    
+                    // Update Profile Photo
+                    if (tgUser.photo_url) {
+                        document.getElementById('userProfilePic').innerHTML = `<img src="${tgUser.photo_url}" alt="User">`;
+                    }
+                }
+            }
         }
 
         const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -489,6 +517,8 @@
         }
 
         function initApp() {
+            fetchTelegramUserData(); // Call Telegram User Details Fetcher
+
             checkAndUpdateBoostTimer();
             setInterval(checkAndUpdateBoostTimer, 1000);
 
@@ -921,7 +951,45 @@
             document.getElementById('dropBtn').disabled = false;
         }
 
+        // Initialize App
         initApp();
+
+        // Custom handler to simulate video logic since real video ads in iframe might not callback consistently
+        var validEvents = ["load","completed", "click", "firstQartile", "midpoint", "thirdQuartile"];
+        let hasReportedShow = false;
+        
+        // Listen for generic message events from iframe
+        window.addEventListener("message", function(e) {
+            try {
+                var msg = JSON.parse(e.data);
+                if (msg && msg.event && validEvents.indexOf(msg.event) !== -1) {
+                    if(msg.event === 'completed') {
+                        handleAdNext();
+                    }
+                }
+            } catch(err) {
+                // Not JSON or other error, ignore
+            }
+        });
+        
+        let simInterval = setInterval(()=>{
+            let btn = document.getElementById('claimAdBtn');
+            if(document.getElementById('adModal').style.display === 'flex') {
+                if(btn.innerText === "Please Wait...") {
+                    setTimeout(()=>{
+                        btn.disabled = false; 
+                        btn.classList.add('ready');
+                        if(currentAdIndex < totalAdsNeeded) {
+                            btn.innerText = "Watch Next Ad";
+                        } else {
+                            btn.innerText = "Drop Balls Now!";
+                        }
+                        document.getElementById('adCountdown').innerText = "Ready!";
+                    }, 5000);
+                }
+            }
+        }, 2000);
+
     </script>
 </body>
 </html>
