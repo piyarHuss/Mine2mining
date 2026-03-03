@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src='//libtl.com/sdk.js' data-zone='10677778' data-sdk='show_10677778'></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pro Crypto Miner Elite</title>
     
-    <!-- TELEGRAM WEB APP SDK (Required for RichAds) -->
+    <!-- TELEGRAM WEB APP SDK (Yeh add karna zaroori tha) -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
@@ -40,34 +41,10 @@
         .user-info p { font-size: 13px; color: var(--text-muted); font-weight: 600;}
         .profile-pic { width: 45px; height: 45px; background: linear-gradient(135deg, var(--secondary), var(--primary)); border-radius: 12px; display: flex; justify-content: center; align-items: center; font-size: 18px; box-shadow: 0 4px 15px rgba(0, 242, 254, 0.3); border: 1px solid rgba(255,255,255,0.2);}
 
-        /* --- NEW PAGE SYSTEM (To Fix Ad Banner Issue) --- */
-        .pages-wrapper {
-            flex-grow: 1;
-            position: relative;
-            width: 100%;
-            overflow: hidden;
-        }
-
-        .page { 
-            display: flex; 
-            flex-direction: column; 
-            position: absolute; 
-            top: 0; left: 0; 
-            width: 100%; height: 100%; 
-            overflow-y: auto; 
-            padding-bottom: 80px; 
-            opacity: 0; 
-            visibility: hidden; 
-            pointer-events: none; 
-            transition: opacity 0.3s ease-in-out; 
-        }
-
-        .page.active { 
-            opacity: 1; 
-            visibility: visible; 
-            pointer-events: auto; 
-            z-index: 5; 
-        }
+        /* Pages System */
+        .page { display: none; flex-direction: column; flex-grow: 1; overflow-y: auto; padding-bottom: 80px; }
+        .page.active { display: flex; animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* --- MINING PAGE --- */
         .balance-card { margin: 10px 20px; background: var(--bg-card); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; padding: 25px 20px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
@@ -101,6 +78,7 @@
         /* --- PROFESSIONAL WALLET PAGE --- */
         .wallet-container { padding: 10px 25px; }
         
+        /* HEADER HISTORY BUTTON CSS */
         .wallet-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
         .wallet-header-title { font-size: 28px; font-weight: 800; color: #fff; margin-bottom: 0; }
         .history-btn { width: 38px; height: 38px; border-radius: 50%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--primary); font-size: 16px; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.3);}
@@ -125,8 +103,8 @@
         .ad-banner-container {
             margin-top: 25px;
             width: 100%;
-            min-height: 80px;
-            background: rgba(0,0,0,0.2);
+            min-height: 60px;
+            background: rgba(0,0,0,0.3);
             border-radius: 12px;
             border: 1px dashed rgba(255,255,255,0.1);
             display: flex;
@@ -134,7 +112,6 @@
             align-items: center;
             overflow: hidden;
             position: relative;
-            padding: 5px;
         }
 
         /* --- PLINKO GAME STYLES --- */
@@ -215,127 +192,123 @@
             <div class="profile-pic"><i class="fa-solid fa-gem"></i></div>
         </div>
 
-        <!-- NEW WRAPPER FOR PAGES -->
-        <div class="pages-wrapper">
-            
-            <!-- PAGE 1: HOME -->
-            <div id="homePage" class="page active">
-                <div class="balance-card">
-                    <div class="balance-title">Current Balance</div>
-                    <div class="balance-amount" id="homeBalanceDisplay">0.0000</div>
-                </div>
-                <div class="mining-section" id="miningSection">
-                    <div class="mining-btn-wrapper">
-                        <div class="pulse-ring"></div><div class="pulse-ring"></div>
-                        <button class="mine-btn" id="mineButton" onclick="startMining()">
-                            <i class="fa-solid fa-power-off"></i><span id="btnText">START</span>
-                        </button>
-                    </div>
-                    <div class="stats-grid">
-                        <div class="stat-box">
-                            <div class="stat-label">Base Rate</div>
-                            <div class="stat-value" id="baseRateDisplay">0.50/hr</div> 
-                        </div>
-                        <div class="stat-box">
-                            <div class="stat-label">Ad Boost</div>
-                            <div class="stat-value" id="boostRateDisplay">+0.00/hr</div>
-                            <div class="boost-timer-text" id="boostTimerDisplay"></div> 
-                        </div>
-                        <div class="stat-box">
-                            <div class="stat-label">Total Rate</div>
-                            <div class="stat-value total" id="totalRateDisplay">0.50/hr</div>
-                        </div>
-                    </div>
-                    <div class="timer" id="timerDisplay">SYSTEM STANDBY</div>
-                    <button class="boost-btn" onclick="watchAdToBoost()">Boost Rate (+0.10/hr)</button>
-                </div>
+        <!-- PAGE 1: HOME -->
+        <div id="homePage" class="page active">
+            <div class="balance-card">
+                <div class="balance-title">Current Balance</div>
+                <div class="balance-amount" id="homeBalanceDisplay">0.0000</div>
             </div>
-
-            <!-- PAGE 2: WALLET -->
-            <div id="walletPage" class="page">
-                <div class="wallet-container">
-                    
-                    <div class="wallet-header-row">
-                        <h2 class="wallet-header-title">My Wallet</h2>
-                        <button class="history-btn" onclick="openHistoryModal()"><i class="fa-solid fa-clock-rotate-left"></i></button>
+            <div class="mining-section" id="miningSection">
+                <div class="mining-btn-wrapper">
+                    <div class="pulse-ring"></div><div class="pulse-ring"></div>
+                    <button class="mine-btn" id="mineButton" onclick="startMining()">
+                        <i class="fa-solid fa-power-off"></i><span id="btnText">START</span>
+                    </button>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-label">Base Rate</div>
+                        <div class="stat-value" id="baseRateDisplay">0.50/hr</div> 
                     </div>
-
-                    <p class="wallet-subtitle" id="conversionText">Conversion: 1 PRN = ₹0.0000001</p> 
-                    
-                    <div class="wallet-card-new">
-                        <div class="wallet-label">Total Balance</div>
-                        <div class="wallet-main-bal" id="walletCoinDisplay">
-                            0.0000 <span class="wallet-prn-text">PRN</span>
-                        </div>
-                        <div class="wallet-fiat-box">
-                            <div class="wallet-fiat-bal" id="walletINRDisplay">≈ ₹0.00</div>
-                        </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Ad Boost</div>
+                        <div class="stat-value" id="boostRateDisplay">+0.00/hr</div>
+                        <div class="boost-timer-text" id="boostTimerDisplay"></div> 
                     </div>
-
-                    <div class="action-btns">
-                        <button class="withdraw-btn" onclick="openWithdrawModal()"><i class="fa-solid fa-money-bill-transfer"></i> Withdraw</button>
-                        <button class="play-game-btn" onclick="switchTab('gamePage')"><i class="fa-solid fa-dice"></i> Casino</button>
+                    <div class="stat-box">
+                        <div class="stat-label">Total Rate</div>
+                        <div class="stat-value total" id="totalRateDisplay">0.50/hr</div>
                     </div>
+                </div>
+                <div class="timer" id="timerDisplay">SYSTEM STANDBY</div>
+                <button class="boost-btn" onclick="watchAdToBoost()">Boost Rate (+0.10/hr)</button>
+            </div>
+        </div>
 
-                    <!-- RICHADS BANNER AD SECTION -->
-                    <!-- Ab page display none nahi hoga, isliye ye ad code perfectly kaam karega! -->
-                    <div class="ad-banner-container">
-                        <script src="https://richinfo.co/richpartners/telegram/js/tg-ob.js"></script>
-                        <script>
-                            window.TelegramAdsController = new TelegramAdsController();
-                            window.TelegramAdsController.initialize({
+        <!-- PAGE 2: WALLET -->
+        <div id="walletPage" class="page">
+            <div class="wallet-container">
+                <!-- WALLET HEADER WITH HISTORY BUTTON -->
+                <div class="wallet-header-row">
+                    <h2 class="wallet-header-title">My Wallet</h2>
+                    <button class="history-btn" onclick="openHistoryModal()"><i class="fa-solid fa-clock-rotate-left"></i></button>
+                </div>
+
+                <p class="wallet-subtitle" id="conversionText">Conversion: 1 PRN = ₹0.0000001</p> 
+                
+                <div class="wallet-card-new">
+                    <div class="wallet-label">Total Balance</div>
+                    <div class="wallet-main-bal" id="walletCoinDisplay">
+                        0.0000 <span class="wallet-prn-text">PRN</span>
+                    </div>
+                    <div class="wallet-fiat-box">
+                        <div class="wallet-fiat-bal" id="walletINRDisplay">≈ ₹0.00</div>
+                    </div>
+                </div>
+
+                <div class="action-btns">
+                    <button class="withdraw-btn" onclick="openWithdrawModal()"><i class="fa-solid fa-money-bill-transfer"></i> Withdraw</button>
+                    <button class="play-game-btn" onclick="switchTab('gamePage')"><i class="fa-solid fa-dice"></i> Casino</button>
+                </div>
+
+                <!-- RICHADS BANNER AD SECTION -->
+                <div class="ad-banner-container">
+                    <script src="https://richinfo.co/richpartners/telegram/js/tg-ob.js"></script>
+                    <script>
+                        if (!window.TelegramAdsControllerInstance) {
+                            window.TelegramAdsControllerInstance = new TelegramAdsController();
+                            window.TelegramAdsControllerInstance.initialize({
                                 pubId: "997172",
                                 appId: "6406",
                             });
-                        </script>
-                    </div>
-
+                        }
+                    </script>
                 </div>
+
             </div>
+        </div>
 
-            <!-- PAGE 3: GAME -->
-            <div id="gamePage" class="page">
-                <div class="game-container">
-                    <div class="bet-controls">
-                        <div class="bal-row">
-                            <span style="color: var(--text-muted)">Wallet Balance</span>
-                            <span id="gameBalDisplay">100.00</span>
-                        </div>
-                        <div class="bet-input-wrapper">
-                            <input type="number" id="betAmount" value="10.00" min="1" oninput="updateDropBtnText()">
-                            <div class="bet-btn-group">
-                                <button onclick="modifyBet(0.5)">½</button>
-                                <button onclick="modifyBet(2)">2×</button>
-                                <button onclick="modifyBet('max')">MAX</button>
-                            </div>
-                        </div>
-                        <select class="ball-selector" id="ballCountSelect" onchange="updateDropBtnText()">
-                            <option value="1">Drop 1 Ball (Cost: 1 Ad)</option>
-                            <option value="5">Drop 5 Balls (Cost: 1 Ad) 🔥</option>
-                            <option value="8">Drop 8 Balls (Cost: 2 Ads)</option>
-                            <option value="20">Drop 20 Balls (Cost: 5 Ads) 🚀</option>
-                        </select>
-                        <button class="play-btn" id="dropBtn" onclick="prepareGame()">
-                            <i class="fa-solid fa-play"></i> <span id="btnMainText">Play (Watch 1 Ad)</span>
-                        </button>
+        <!-- PAGE 3: GAME -->
+        <div id="gamePage" class="page">
+            <div class="game-container">
+                <div class="bet-controls">
+                    <div class="bal-row">
+                        <span style="color: var(--text-muted)">Wallet Balance</span>
+                        <span id="gameBalDisplay">100.00</span>
                     </div>
-
-                    <div class="plinko-area" id="board">
-                        <div class="pegs-container" id="pegsContainer"></div>
-                        <div class="slots-container">
-                            <div class="slot c-110">110</div><div class="slot c-41">41</div><div class="slot c-10">10</div><div class="slot c-5">5</div>
-                            <div class="slot c-3">3</div><div class="slot c-1_5">1.5</div><div class="slot c-1">1</div><div class="slot c-0_5">0.5</div>
-                            <div class="slot c-0_2">0.2</div>
-                            <div class="slot c-0_5">0.5</div><div class="slot c-1">1</div><div class="slot c-1_5">1.5</div><div class="slot c-3">3</div>
-                            <div class="slot c-5">5</div><div class="slot c-10">10</div><div class="slot c-41">41</div><div class="slot c-110">110</div>
+                    <div class="bet-input-wrapper">
+                        <input type="number" id="betAmount" value="10.00" min="1" oninput="updateDropBtnText()">
+                        <div class="bet-btn-group">
+                            <button onclick="modifyBet(0.5)">½</button>
+                            <button onclick="modifyBet(2)">2×</button>
+                            <button onclick="modifyBet('max')">MAX</button>
                         </div>
                     </div>
-
-                    <div class="game-result" id="gameResultText">Set your bet & drop!</div>
+                    <select class="ball-selector" id="ballCountSelect" onchange="updateDropBtnText()">
+                        <option value="1">Drop 1 Ball (Cost: 1 Ad)</option>
+                        <option value="5">Drop 5 Balls (Cost: 1 Ad) 🔥</option>
+                        <option value="8">Drop 8 Balls (Cost: 2 Ads)</option>
+                        <option value="20">Drop 20 Balls (Cost: 5 Ads) 🚀</option>
+                    </select>
+                    <button class="play-btn" id="dropBtn" onclick="prepareGame()">
+                        <i class="fa-solid fa-play"></i> <span id="btnMainText">Play (Watch 1 Ad)</span>
+                    </button>
                 </div>
-            </div>
 
-        </div> <!-- END OF PAGES WRAPPER -->
+                <div class="plinko-area" id="board">
+                    <div class="pegs-container" id="pegsContainer"></div>
+                    <div class="slots-container">
+                        <div class="slot c-110">110</div><div class="slot c-41">41</div><div class="slot c-10">10</div><div class="slot c-5">5</div>
+                        <div class="slot c-3">3</div><div class="slot c-1_5">1.5</div><div class="slot c-1">1</div><div class="slot c-0_5">0.5</div>
+                        <div class="slot c-0_2">0.2</div>
+                        <div class="slot c-0_5">0.5</div><div class="slot c-1">1</div><div class="slot c-1_5">1.5</div><div class="slot c-3">3</div>
+                        <div class="slot c-5">5</div><div class="slot c-10">10</div><div class="slot c-41">41</div><div class="slot c-110">110</div>
+                    </div>
+                </div>
+
+                <div class="game-result" id="gameResultText">Set your bet & drop!</div>
+            </div>
+        </div>
 
         <!-- AD MODAL -->
         <div class="modal-overlay" id="adModal">
@@ -430,7 +403,7 @@
     <!-- MAIN GAME LOGIC                            -->
     <!-- ========================================== -->
     <script>
-        // Init Telegram Web App
+        // Init Telegram Web App (Taki Ads code sahi se chale)
         if (window.Telegram && window.Telegram.WebApp) {
             window.Telegram.WebApp.ready();
         }
@@ -549,14 +522,10 @@
             document.getElementById('gameBalDisplay').innerText = formattedGameBal;
         }
 
-        // TABS SWITCHER
         function switchTab(pageId, navElement) {
             soundClick();
-            document.querySelectorAll('.page').forEach(e => e.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active'));
-            
+            document.querySelectorAll('.page, .nav-item').forEach(e => e.classList.remove('active'));
             document.getElementById(pageId).classList.add('active');
-            
             if(navElement) navElement.classList.add('active'); 
             else if(pageId === 'gamePage') document.querySelectorAll('.nav-item')[2].classList.add('active');
         }
@@ -613,7 +582,7 @@
         }
 
         // ==========================================
-        // WITHDRAWAL SYSTEM
+        // WITHDRAWAL SYSTEM (UPI & TON WALLET)
         // ==========================================
 
         function openWithdrawModal() {
@@ -670,9 +639,11 @@
                 return;
             }
 
+            // Deduct Balance
             balance -= amount;
             updateAllBalances();
             
+            // Save data to localStorage
             let pendingRequests = JSON.parse(localStorage.getItem('pendingWithdrawals')) || [];
             pendingRequests.push({
                 amount: amount,
@@ -686,7 +657,7 @@
             alert(`✅ Withdrawal Successful!\n\n${amount.toLocaleString()} PRN will be sent to your ${method.toUpperCase()} (${address}) shortly.`);
             
             closeWithdrawModal();
-            document.getElementById('withdrawAddress').value = ""; 
+            document.getElementById('withdrawAddress').value = ""; // Clear input
         }
 
         // ==========================================
