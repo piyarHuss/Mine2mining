@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- MONETAG SDK SCRIPT -->
     <script src='//libtl.com/sdk.js' data-zone='10677778' data-sdk='show_10677778'></script>
+    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pro Crypto Miner Elite</title>
@@ -78,12 +80,11 @@
         .boost-timer-text { font-family: 'Space Grotesk', sans-serif; font-size: 9px; color: var(--warning); margin-top: 3px; height: 12px; font-weight: bold; letter-spacing: 0.5px;}
 
         .timer { font-family: 'Space Grotesk', sans-serif; color: var(--warning); font-size: 15px; background: rgba(245, 158, 11, 0.1); padding: 8px 20px; border-radius: 20px; border: 1px solid rgba(245, 158, 11, 0.2);}
-        .boost-btn { background: linear-gradient(90deg, #8b5cf6, #d946ef); color: white; border: none; padding: 15px 30px; border-radius: 30px; font-weight: 700; cursor: pointer; margin-top: 25px; box-shadow: 0 10px 20px rgba(217, 70, 239, 0.3); }
+        
+        .boost-btn { background: linear-gradient(90deg, #8b5cf6, #d946ef); color: white; border: none; padding: 15px 30px; border-radius: 30px; font-weight: 700; cursor: pointer; margin-top: 25px; box-shadow: 0 10px 20px rgba(217, 70, 239, 0.3); transition: 0.3s;}
 
         /* --- PROFESSIONAL WALLET PAGE --- */
         .wallet-container { padding: 10px 25px; }
-        
-        /* HEADER HISTORY BUTTON CSS */
         .wallet-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
         .wallet-header-title { font-size: 28px; font-weight: 800; color: #fff; margin-bottom: 0; }
         .history-btn { width: 38px; height: 38px; border-radius: 50%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--primary); font-size: 16px; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.3);}
@@ -94,7 +95,7 @@
         .wallet-card-new { background: linear-gradient(145deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.9)); border: 1px solid rgba(255,255,255,0.08); border-radius: 24px; padding: 30px 20px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 15px 35px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05); }
         .wallet-label { color: var(--text-muted); font-size: 13px; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; margin-bottom: 8px; }
         .wallet-main-bal { font-family: 'Space Grotesk', sans-serif; font-size: clamp(28px, 8vw, 42px); font-weight: 800; color: var(--primary); text-shadow: 0 0 20px rgba(0, 242, 254, 0.3); text-align: center; word-break: break-word; line-height: 1.1; }
-        .wallet-prn-text { font-size: 18px; color: var(--text-muted); font-weight: 600; vertical-align: middle; }
+        .wallet-coin-text { font-size: 18px; color: var(--text-muted); font-weight: 600; vertical-align: middle; }
         .wallet-fiat-box { margin-top: 15px; background: rgba(16, 185, 129, 0.1); padding: 8px 20px; border-radius: 20px; border: 1px solid rgba(16, 185, 129, 0.2); display: inline-block; }
         .wallet-fiat-bal { font-family: 'Space Grotesk', sans-serif; font-size: 18px; font-weight: 700; color: var(--accent); }
 
@@ -191,7 +192,7 @@
 <body>
 
     <div class="app-container">
-        <!-- HEADER (Updated with Telegram Profile & Name) -->
+        <!-- HEADER -->
         <div class="header">
             <div class="user-info">
                 <h2>Pro Network</h2>
@@ -199,7 +200,7 @@
             </div>
             <div class="header-right">
                 <div class="profile-pic" id="userProfilePic">
-                    <i class="fa-solid fa-gem"></i> <!-- Fallback Icon -->
+                    <i class="fa-solid fa-gem"></i>
                 </div>
                 <div class="user-name" id="userNameDisplay">Miner</div>
             </div>
@@ -234,28 +235,28 @@
                     </div>
                 </div>
                 <div class="timer" id="timerDisplay">SYSTEM STANDBY</div>
-                <button class="boost-btn" onclick="watchAdToBoost()">Boost Rate (+0.10/hr)</button>
+                <!-- UPDATED BOOST BUTTON -->
+                <button class="boost-btn" id="mainBoostBtn" onclick="watchAdToBoost()">Boost Rate (+0.10/hr)</button>
             </div>
         </div>
 
         <!-- PAGE 2: WALLET -->
         <div id="walletPage" class="page">
             <div class="wallet-container">
-                <!-- WALLET HEADER WITH HISTORY BUTTON -->
                 <div class="wallet-header-row">
                     <h2 class="wallet-header-title">My Wallet</h2>
                     <button class="history-btn" onclick="openHistoryModal()"><i class="fa-solid fa-clock-rotate-left"></i></button>
                 </div>
 
-                <p class="wallet-subtitle" id="conversionText">Conversion: 1 PRN = ₹0.0000001</p> 
+                <p class="wallet-subtitle" id="conversionText">Conversion: 1 MINE = $0.0000001</p> 
                 
                 <div class="wallet-card-new">
                     <div class="wallet-label">Total Balance</div>
                     <div class="wallet-main-bal" id="walletCoinDisplay">
-                        0.0000 <span class="wallet-prn-text">PRN</span>
+                        0.0000 <span class="wallet-coin-text">MINE</span>
                     </div>
                     <div class="wallet-fiat-box">
-                        <div class="wallet-fiat-bal" id="walletINRDisplay">≈ ₹0.00</div>
+                        <div class="wallet-fiat-bal" id="walletFiatDisplay">≈ $0.00</div>
                     </div>
                 </div>
 
@@ -264,19 +265,20 @@
                     <button class="play-game-btn" onclick="switchTab('gamePage')"><i class="fa-solid fa-dice"></i> Casino</button>
                 </div>
 
-                <!-- RICHADS BANNER AD SECTION -->
+                <!-- ⬇️ RICHADS BANNER AD CONTAINER ⬇️ -->
                 <div class="ad-banner-container">
                     <script src="https://richinfo.co/richpartners/telegram/js/tg-ob.js"></script>
                     <script>
-                        if (!window.TelegramAdsControllerInstance) {
-                            window.TelegramAdsControllerInstance = new TelegramAdsController();
-                            window.TelegramAdsControllerInstance.initialize({
+                        if (!window.myTelegramAdInstance) {
+                            window.myTelegramAdInstance = new TelegramAdsController();
+                            window.myTelegramAdInstance.initialize({
                                 pubId: "997172",
                                 appId: "6406",
                             });
                         }
                     </script>
                 </div>
+                <!-- ⬆️ RICHADS BANNER AD CONTAINER END ⬆️ -->
 
             </div>
         </div>
@@ -304,7 +306,7 @@
                         <option value="20">Drop 20 Balls (Cost: 5 Ads) 🚀</option>
                     </select>
                     <button class="play-btn" id="dropBtn" onclick="prepareGame()">
-                        <i class="fa-solid fa-play"></i> <span id="btnMainText">Play (Watch 1 Ad)</span>
+                        <i class="fa-solid fa-play"></i> <span id="btnMainText">Play 10.00 MINE (Watch 1 Ad)</span>
                     </button>
                 </div>
 
@@ -323,7 +325,7 @@
             </div>
         </div>
 
-        <!-- AD MODAL -->
+        <!-- SIMULATED AD MODAL (ONLY FOR PLINKO GAME) -->
         <div class="modal-overlay" id="adModal">
             <div class="ad-box">
                 <h3><i class="fa-solid fa-video" style="color:var(--primary);"></i> Watch Ads to Play</h3>
@@ -341,23 +343,23 @@
         <div class="modal-overlay" id="withdrawModal">
             <div class="withdraw-box">
                 <h3>Withdraw Funds</h3>
-                <div class="withdraw-info" id="withdrawAvailBal">Available: 0.00 PRN</div>
+                <div class="withdraw-info" id="withdrawAvailBal">Available: 0.00 MINE</div>
 
                 <div class="input-group">
                     <label>Select Method</label>
                     <select id="withdrawMethod" onchange="updateWithdrawInput()">
-                        <option value="upi">UPI (India Only)</option>
                         <option value="ton">TON Wallet (Crypto)</option>
+                        <option value="upi">UPI</option>
                     </select>
                 </div>
 
                 <div class="input-group">
-                    <label id="withdrawLabel">Enter UPI ID</label>
-                    <input type="text" id="withdrawAddress" placeholder="e.g. name@okhdfcbank">
+                    <label id="withdrawLabel">Enter TON Wallet Address</label>
+                    <input type="text" id="withdrawAddress" placeholder="e.g. UQ... or EQ...">
                 </div>
 
                 <div class="input-group">
-                    <label>Amount (PRN)</label>
+                    <label>Amount (MINE)</label>
                     <input type="number" id="withdrawAmount" placeholder="Min 500,000,000">
                 </div>
 
@@ -376,7 +378,6 @@
                     <button onclick="closeHistoryModal()" style="background: none; border: none; color: white; font-size: 22px; cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
                 </div>
                 <div id="historyList" style="overflow-y: auto; flex-grow: 1; display: flex; flex-direction: column; gap: 10px; padding-top: 10px;">
-                    <!-- History items will be injected here by JS -->
                 </div>
             </div>
         </div>
@@ -389,46 +390,17 @@
         </div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- FIREBASE INITIALIZATION SCRIPT (CDN BASED) -->
-    <!-- ========================================== -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-analytics.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyDbvONjiKgqYfYwKIkUusXb7vf0r3jLrnA",
-            authDomain: "video-spp.firebaseapp.com",
-            databaseURL: "https://video-spp-default-rtdb.firebaseio.com",
-            projectId: "video-spp",
-            storageBucket: "video-spp.firebasestorage.app",
-            messagingSenderId: "383033368244",
-            appId: "1:383033368244:web:fbbad9cd538a275fefc1e1",
-            measurementId: "G-RT80D7H4R2"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
-        console.log("Firebase Initialized!");
-    </script>
-
-    <!-- ========================================== -->
-    <!-- MAIN GAME LOGIC                            -->
-    <!-- ========================================== -->
+    <!-- MAIN LOGIC -->
     <script>
-        // Init Telegram Web App Data
         function fetchTelegramUserData() {
             if (window.Telegram && window.Telegram.WebApp) {
                 const tg = window.Telegram.WebApp;
                 tg.ready();
-                tg.expand(); // Good practice
+                tg.expand(); 
 
                 const tgUser = tg.initDataUnsafe?.user;
                 if (tgUser) {
-                    // Update First Name
                     document.getElementById('userNameDisplay').innerText = tgUser.first_name || "Miner";
-                    
-                    // Update Profile Photo
                     if (tgUser.photo_url) {
                         document.getElementById('userProfilePic').innerHTML = `<img src="${tgUser.photo_url}" alt="User">`;
                     }
@@ -440,7 +412,6 @@
         let audioCtx;
 
         function initAudio() { if(!audioCtx) audioCtx = new AudioContext(); if(audioCtx.state === 'suspended') audioCtx.resume(); }
-
         function playTone(freq, type, duration, vol) {
             if(!audioCtx) return;
             const osc = audioCtx.createOscillator();
@@ -458,18 +429,17 @@
         function soundLose() { initAudio(); playTone(200, 'sawtooth', 0.3, 0.1); }
 
         // ==========================================
-        // ADMIN PANEL VARIABLES & USER DATA INTEGRATION
+        // VARIABLES & SYSTEM
         // ==========================================
         let balance = parseFloat(localStorage.getItem('userBalance')) || 100.0000;
         let isMining = localStorage.getItem('isMining') === 'true';
         let miningEndTime = parseInt(localStorage.getItem('miningEndTime')) || 0;
         
-        // ADMIN SETTINGS
         let SYS_BASE_RATE = parseFloat(localStorage.getItem('sys_baseRate')) || 0.50;
         let SYS_COIN_VALUE = parseFloat(localStorage.getItem('sys_coinValue')) || 0.0000001;
         let SYS_MIN_WITHDRAW = parseFloat(localStorage.getItem('sys_minWithdraw')) || 500000000; 
 
-        // USER BOOST & ADS LOGIC
+        // BOOST VARIABLES
         let boostRatePerHour = parseFloat(localStorage.getItem('userBoostRate')) || 0.00;
         let boostEndTime = parseInt(localStorage.getItem('boostEndTime')) || 0;
         let totalAdsWatched = parseInt(localStorage.getItem('sys_totalAds')) || 0; 
@@ -477,6 +447,74 @@
         let totalRatePerHour = SYS_BASE_RATE + boostRatePerHour; 
         let ratePerSecond = totalRatePerHour / 3600;
         let miningInterval, timerInterval;
+
+        // NEW ADS INVENTORY (10 Max, Recovers 4/hr)
+        let availableBoostAds = parseInt(localStorage.getItem('availableBoostAds'));
+        if (isNaN(availableBoostAds)) availableBoostAds = 10;
+        let lastBoostAdTime = parseInt(localStorage.getItem('lastBoostAdTime')) || 0;
+        let lastAdRecoveryTime = parseInt(localStorage.getItem('lastAdRecoveryTime')) || Date.now();
+
+        // OFFLINE MINING CALCULATOR
+        function calculateOfflineEarnings(lastTime, currentTime) {
+            if(lastTime >= currentTime) return 0;
+            let actualEndTime = Math.min(currentTime, miningEndTime); 
+            if(lastTime >= actualEndTime) return 0;
+
+            let offlineSeconds = (actualEndTime - lastTime) / 1000;
+            let earned = 0;
+            let baseRateSec = SYS_BASE_RATE / 3600;
+            
+            if (boostRatePerHour > 0 && boostEndTime > lastTime) {
+                let boostEndForCalc = Math.min(actualEndTime, boostEndTime);
+                let boostedSeconds = (boostEndForCalc - lastTime) / 1000;
+                let normalSeconds = (actualEndTime - boostEndForCalc) / 1000;
+                let boostedRateSec = (SYS_BASE_RATE + boostRatePerHour) / 3600;
+                earned = (boostedSeconds * boostedRateSec) + (normalSeconds > 0 ? normalSeconds * baseRateSec : 0);
+            } else {
+                earned = offlineSeconds * baseRateSec;
+            }
+            return earned;
+        }
+
+        // AD RECOVERY LOGIC (1 ad per 15 mins = 4 ads per hour)
+        function checkAdRecovery() {
+            let now = Date.now();
+            if (availableBoostAds < 10) {
+                let elapsed = now - lastAdRecoveryTime;
+                let recovered = Math.floor(elapsed / (15 * 60 * 1000)); // 15 mins
+                if (recovered > 0) {
+                    availableBoostAds = Math.min(10, availableBoostAds + recovered);
+                    lastAdRecoveryTime += recovered * (15 * 60 * 1000); 
+                    localStorage.setItem('availableBoostAds', availableBoostAds);
+                    localStorage.setItem('lastAdRecoveryTime', lastAdRecoveryTime);
+                }
+            } else {
+                lastAdRecoveryTime = now;
+                localStorage.setItem('lastAdRecoveryTime', lastAdRecoveryTime);
+            }
+            updateBoostButtonUI();
+        }
+
+        // UPDATE BOOST BUTTON (Dynamic UI with Cooldown)
+        function updateBoostButtonUI() {
+            let btn = document.getElementById('mainBoostBtn');
+            let now = Date.now();
+            
+            if (availableBoostAds <= 0) {
+                btn.innerText = `No Ads Left (Recovering...)`;
+                btn.style.opacity = '0.5';
+                btn.style.cursor = 'not-allowed';
+            } else if (now - lastBoostAdTime < 5000) {
+                let left = Math.ceil((5000 - (now - lastBoostAdTime))/1000);
+                btn.innerText = `Wait ${left}s...`;
+                btn.style.opacity = '0.7';
+                btn.style.cursor = 'not-allowed';
+            } else {
+                btn.innerText = `Boost Rate (+0.10/hr) [Ads: ${availableBoostAds}/10]`;
+                btn.style.opacity = '1';
+                btn.style.cursor = 'pointer';
+            }
+        }
 
         function updateRadarSpeed() {
             let boostCount = boostRatePerHour / 0.10;
@@ -495,14 +533,12 @@
                 boostRatePerHour = 0.00;
                 totalRatePerHour = SYS_BASE_RATE; 
                 ratePerSecond = totalRatePerHour / 3600;
-                
                 localStorage.setItem('userBoostRate', '0');
                 localStorage.setItem('boostEndTime', '0');
                 
                 document.getElementById('boostRateDisplay').innerText = `+0.00/hr`;
                 document.getElementById('totalRateDisplay').innerText = `${totalRatePerHour.toFixed(2)}/hr`;
                 timerDisplay.innerText = ""; 
-                
                 updateRadarSpeed(); 
             } 
             else if (boostRatePerHour > 0 && now <= boostEndTime) {
@@ -517,13 +553,31 @@
         }
 
         function initApp() {
-            fetchTelegramUserData(); // Call Telegram User Details Fetcher
+            fetchTelegramUserData(); 
+
+            let now = new Date().getTime();
+            let lastTime = parseInt(localStorage.getItem('lastUpdateTime')) || now;
+
+            if (isMining) {
+                let earned = calculateOfflineEarnings(lastTime, now);
+                if (earned > 0) {
+                    balance += earned;
+                    localStorage.setItem('userBalance', balance);
+                }
+            }
+            localStorage.setItem('lastUpdateTime', now);
 
             checkAndUpdateBoostTimer();
-            setInterval(checkAndUpdateBoostTimer, 1000);
+            checkAdRecovery();
+            
+            // Background Checker Interval
+            setInterval(() => {
+                checkAndUpdateBoostTimer();
+                checkAdRecovery();
+            }, 1000);
 
             document.getElementById('baseRateDisplay').innerText = `${SYS_BASE_RATE.toFixed(2)}/hr`;
-            document.getElementById('conversionText').innerText = `Conversion: 1 PRN = ₹${SYS_COIN_VALUE}`;
+            document.getElementById('conversionText').innerText = `Conversion: 1 MINE = $${SYS_COIN_VALUE}`;
             
             updateAllBalances();
             document.getElementById('boostRateDisplay').innerText = `+${boostRatePerHour.toFixed(2)}/hr`;
@@ -535,6 +589,7 @@
             
             if (isMining && new Date().getTime() < miningEndTime) resumeMining();
             else stopMining();
+            
             document.body.addEventListener('click', () => { initAudio(); }, {once:true});
         }
 
@@ -543,12 +598,12 @@
             let formattedHomeBal = balance.toLocaleString('en-US', { minimumFractionDigits: 4, maximumFractionDigits: 4 });
             let formattedGameBal = balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
             
-            let inrValue = (balance * SYS_COIN_VALUE);
-            let formattedINR = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2, maximumFractionDigits: 8 }).format(inrValue);
+            let fiatValue = (balance * SYS_COIN_VALUE);
+            let formattedUSD = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 8 }).format(fiatValue);
 
             document.getElementById('homeBalanceDisplay').innerText = formattedHomeBal;
-            document.getElementById('walletCoinDisplay').innerHTML = `${formattedHomeBal} <span class="wallet-prn-text">PRN</span>`;
-            document.getElementById('walletINRDisplay').innerText = `≈ ${formattedINR}`;
+            document.getElementById('walletCoinDisplay').innerHTML = `${formattedHomeBal} <span class="wallet-coin-text">MINE</span>`;
+            document.getElementById('walletFiatDisplay').innerText = `≈ ${formattedUSD}`;
             document.getElementById('gameBalDisplay').innerText = formattedGameBal;
         }
 
@@ -564,12 +619,22 @@
             soundClick();
             if (isMining) return;
             isMining = true; localStorage.setItem('isMining', 'true');
-            miningEndTime = new Date().getTime() + (24*60*60*1000); localStorage.setItem('miningEndTime', miningEndTime);
+            miningEndTime = new Date().getTime() + (24*60*60*1000); 
+            localStorage.setItem('miningEndTime', miningEndTime);
+            localStorage.setItem('lastUpdateTime', new Date().getTime());
             resumeMining();
         }
+        
         function resumeMining() {
-            document.getElementById('miningSection').classList.add('mining-active'); document.getElementById('btnText').innerText = "MINING";
-            miningInterval = setInterval(() => { balance += ratePerSecond; updateAllBalances(); }, 1000);
+            document.getElementById('miningSection').classList.add('mining-active'); 
+            document.getElementById('btnText').innerText = "MINING";
+            
+            miningInterval = setInterval(() => { 
+                balance += ratePerSecond; 
+                localStorage.setItem('lastUpdateTime', new Date().getTime());
+                updateAllBalances(); 
+            }, 1000);
+            
             timerInterval = setInterval(() => {
                 let d = miningEndTime - new Date().getTime();
                 if (d <= 0) stopMining();
@@ -579,6 +644,7 @@
                 }
             }, 1000);
         }
+        
         function stopMining() {
             isMining = false; localStorage.setItem('isMining', 'false');
             clearInterval(miningInterval); clearInterval(timerInterval);
@@ -586,47 +652,80 @@
             document.getElementById('timerDisplay').innerText = "SYSTEM STANDBY";
         }
 
+        // ==========================================
+        // MONETAG BOOST AD SYSTEM
+        // ==========================================
         function watchAdToBoost() {
             soundClick();
-            if(confirm("Watch Ad to boost mining speed by +0.10/hr for 7 HOURS?")) {
-                setTimeout(() => {
-                    boostRatePerHour += 0.10; 
-                    totalRatePerHour = SYS_BASE_RATE + boostRatePerHour; 
-                    ratePerSecond = totalRatePerHour/3600;
-                    boostEndTime = new Date().getTime() + (7 * 60 * 60 * 1000); 
-                    
-                    totalAdsWatched++; 
-                    localStorage.setItem('sys_totalAds', totalAdsWatched);
+            let now = Date.now();
+            
+            if (availableBoostAds <= 0) {
+                alert("You have exhausted your ads! Please wait, 4 ads recover every 1 hour.");
+                return;
+            }
+            if (now - lastBoostAdTime < 5000) {
+                return; // Cooldown active, ignore click
+            }
 
-                    localStorage.setItem('userBoostRate', boostRatePerHour);
-                    localStorage.setItem('boostEndTime', boostEndTime);
-
-                    document.getElementById('boostRateDisplay').innerText = `+${boostRatePerHour.toFixed(2)}/hr`;
-                    document.getElementById('totalRateDisplay').innerText = `${totalRatePerHour.toFixed(2)}/hr`;
-                    
-                    updateRadarSpeed(); 
-                    checkAndUpdateBoostTimer(); 
-                    
-                }, 1500);
+            // Call Monetag SDK function
+            if (typeof show_10677778 === 'function') {
+                show_10677778().then(() => {
+                    applyBoostReward();
+                }).catch((e) => {
+                    console.log("Ad show error:", e);
+                });
+            } else {
+                // Fallback / Alert if SDK fails
+                alert("Loading Ad system... If it fails, please check your network or adblocker.");
+                // For test purposes if SDK not loaded, uncomment line below:
+                // setTimeout(applyBoostReward, 1000);
             }
         }
 
-        // ==========================================
-        // WITHDRAWAL SYSTEM (UPI & TON WALLET)
-        // ==========================================
+        function applyBoostReward() {
+            availableBoostAds--;
+            lastBoostAdTime = Date.now();
+            
+            // If dropping from 10 to 9, start the recovery timer
+            if (availableBoostAds === 9) {
+                lastAdRecoveryTime = Date.now();
+                localStorage.setItem('lastAdRecoveryTime', lastAdRecoveryTime);
+            }
 
+            localStorage.setItem('availableBoostAds', availableBoostAds);
+            localStorage.setItem('lastBoostAdTime', lastBoostAdTime);
+
+            // Apply +0.10/hr Boost & Stack the rate
+            boostRatePerHour += 0.10; 
+            totalRatePerHour = SYS_BASE_RATE + boostRatePerHour; 
+            ratePerSecond = totalRatePerHour / 3600;
+            
+            // Reset timer to 7 hours from right now
+            boostEndTime = Date.now() + (7 * 60 * 60 * 1000); 
+            
+            totalAdsWatched++; 
+            localStorage.setItem('sys_totalAds', totalAdsWatched);
+            localStorage.setItem('userBoostRate', boostRatePerHour);
+            localStorage.setItem('boostEndTime', boostEndTime);
+
+            document.getElementById('boostRateDisplay').innerText = `+${boostRatePerHour.toFixed(2)}/hr`;
+            document.getElementById('totalRateDisplay').innerText = `${totalRatePerHour.toFixed(2)}/hr`;
+            
+            updateRadarSpeed(); 
+            checkAndUpdateBoostTimer();
+            updateBoostButtonUI();
+        }
+
+        // ==========================================
+        // WITHDRAWAL SYSTEM
+        // ==========================================
         function openWithdrawModal() {
             soundClick();
-            document.getElementById('withdrawAvailBal').innerText = `Available: ${balance.toLocaleString('en-US', {maximumFractionDigits: 2})} PRN`;
-            
+            document.getElementById('withdrawAvailBal').innerText = `Available: ${balance.toLocaleString('en-US', {maximumFractionDigits: 2})} MINE`;
             let inputField = document.getElementById('withdrawAmount');
-            if(balance >= SYS_MIN_WITHDRAW) {
-                inputField.value = Math.floor(balance);
-            } else {
-                inputField.value = "";
-            }
+            if(balance >= SYS_MIN_WITHDRAW) { inputField.value = Math.floor(balance); } 
+            else { inputField.value = ""; }
             inputField.placeholder = `Min: ${SYS_MIN_WITHDRAW.toLocaleString()}`;
-
             document.getElementById('withdrawModal').style.display = 'flex';
         }
 
@@ -639,7 +738,6 @@
             const method = document.getElementById('withdrawMethod').value;
             const label = document.getElementById('withdrawLabel');
             const input = document.getElementById('withdrawAddress');
-            
             if (method === 'upi') {
                 label.innerText = "Enter UPI ID";
                 input.placeholder = "e.g. name@okhdfcbank";
@@ -656,85 +754,47 @@
             const address = document.getElementById('withdrawAddress').value.trim();
             const method = document.getElementById('withdrawMethod').value;
 
-            if (isNaN(amount) || amount < SYS_MIN_WITHDRAW) {
-                alert(`Minimum withdrawal is ${SYS_MIN_WITHDRAW.toLocaleString()} PRN! You don't have enough balance.`);
-                return;
-            }
-            if (amount > balance) {
-                alert("Insufficient balance! You are trying to withdraw more than you have.");
-                return;
-            }
-            if (address === "") {
-                alert(`Please enter your ${method === 'upi' ? 'UPI ID' : 'TON Wallet Address'}!`);
-                return;
-            }
+            if (isNaN(amount) || amount < SYS_MIN_WITHDRAW) { alert(`Minimum withdrawal is ${SYS_MIN_WITHDRAW.toLocaleString()} MINE! You don't have enough balance.`); return; }
+            if (amount > balance) { alert("Insufficient balance! You are trying to withdraw more than you have."); return; }
+            if (address === "") { alert(`Please enter your ${method === 'upi' ? 'UPI ID' : 'TON Wallet Address'}!`); return; }
 
-            // Deduct Balance
-            balance -= amount;
-            updateAllBalances();
+            balance -= amount; updateAllBalances();
             
-            // Save data to localStorage
             let pendingRequests = JSON.parse(localStorage.getItem('pendingWithdrawals')) || [];
-            pendingRequests.push({
-                amount: amount,
-                method: method.toUpperCase(),
-                address: address,
-                date: new Date().getTime(),
-                status: 'Pending'
-            });
+            pendingRequests.push({ amount: amount, method: method.toUpperCase(), address: address, date: new Date().getTime(), status: 'Pending' });
             localStorage.setItem('pendingWithdrawals', JSON.stringify(pendingRequests));
 
-            alert(`✅ Withdrawal Successful!\n\n${amount.toLocaleString()} PRN will be sent to your ${method.toUpperCase()} (${address}) shortly.`);
-            
+            alert(`✅ Withdrawal Successful!\n\n${amount.toLocaleString()} MINE will be sent to your ${method.toUpperCase()} (${address}) shortly.`);
             closeWithdrawModal();
-            document.getElementById('withdrawAddress').value = ""; // Clear input
+            document.getElementById('withdrawAddress').value = "";
         }
 
-        // ==========================================
-        // WITHDRAWAL HISTORY SYSTEM
-        // ==========================================
-
         function openHistoryModal() {
-            soundClick();
-            loadHistoryData();
+            soundClick(); loadHistoryData();
             document.getElementById('historyModal').style.display = 'flex';
         }
 
-        function closeHistoryModal() {
-            soundClick();
-            document.getElementById('historyModal').style.display = 'none';
-        }
+        function closeHistoryModal() { soundClick(); document.getElementById('historyModal').style.display = 'none'; }
 
         function loadHistoryData() {
             const historyList = document.getElementById('historyList');
             let requests = JSON.parse(localStorage.getItem('pendingWithdrawals')) || [];
-            
             historyList.innerHTML = "";
-
             if (requests.length === 0) {
                 historyList.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 30px 10px; font-size: 14px;">No withdrawal history found.</div>`;
                 return;
             }
-
             requests.slice().reverse().forEach(req => {
-                let dateStr = new Date(req.date).toLocaleString('en-IN', { day:'numeric', month:'short', year:'numeric', hour: '2-digit', minute:'2-digit' });
+                let dateStr = new Date(req.date).toLocaleString('en-US', { day:'numeric', month:'short', year:'numeric', hour: '2-digit', minute:'2-digit' });
                 let amountStr = parseFloat(req.amount).toLocaleString('en-US');
-                
-                let statusClass = "status-pending";
-                let icon = '<i class="fa-solid fa-clock"></i>';
-                
-                if (req.status === 'Approved') {
-                    statusClass = "status-approved";
-                    icon = '<i class="fa-solid fa-check"></i>';
-                } else if (req.status === 'Rejected') {
-                    statusClass = "status-rejected";
-                    icon = '<i class="fa-solid fa-xmark"></i>';
-                }
+                let statusClass = "status-pending"; let icon = '<i class="fa-solid fa-clock"></i>';
+                if (req.status === 'Approved') { statusClass = "status-approved"; icon = '<i class="fa-solid fa-check"></i>'; } 
+                else if (req.status === 'Rejected') { statusClass = "status-rejected"; icon = '<i class="fa-solid fa-xmark"></i>'; }
 
                 let item = `
                     <div class="history-item">
                         <div class="hist-row">
-                            <span class="hist-amount">${amountStr} <span style="font-size: 12px; color: var(--text-muted);">PRN</span></span>
+                            <span class="hist-amount">${amountStr} <span style="font-size: 12px; color: var(--text-muted);">MINE</span></span>
                             <span class="hist-status ${statusClass}">${icon} ${req.status}</span>
                         </div>
                         <div class="hist-row" style="margin-top: 5px;">
@@ -753,25 +813,16 @@
         // ==========================================
         // PLINKO GAME LOGIC
         // ==========================================
-
         const adRequirements = { "1": 1, "5": 1, "8": 2, "20": 5 };
         const slotsMultiplier = [110, 41, 10, 5, 3, 1.5, 1, 0.5, 0.2, 0.5, 1, 1.5, 3, 5, 10, 41, 110];
-        
-        let isGameRunning = false; 
-        let currentBet = 0;
-        let ballsToDrop = 0;
-        let activeBallsCount = 0;
-        let totalWinForRound = 0;
-
-        let totalAdsNeeded = 0;
-        let currentAdIndex = 1;
+        let isGameRunning = false; let currentBet = 0; let ballsToDrop = 0; let activeBallsCount = 0; let totalWinForRound = 0;
+        let totalAdsNeeded = 0; let currentAdIndex = 1;
 
         function generatePyramid() {
             const container = document.getElementById('pegsContainer');
             container.innerHTML = '';
             for(let r=3; r<=18; r++) { 
-                let row = document.createElement('div');
-                row.className = 'peg-row';
+                let row = document.createElement('div'); row.className = 'peg-row';
                 for(let p=0; p<r; p++) { let peg = document.createElement('div'); peg.className = 'peg'; row.appendChild(peg); }
                 container.appendChild(row);
             }
@@ -779,8 +830,7 @@
 
         function modifyBet(action) {
             soundClick();
-            let input = document.getElementById('betAmount');
-            let val = parseFloat(input.value) || 0;
+            let input = document.getElementById('betAmount'); let val = parseFloat(input.value) || 0;
             if(action === 'max') input.value = balance.toFixed(2);
             else input.value = Math.max(1, (val * action)).toFixed(2);
             updateDropBtnText();
@@ -791,22 +841,19 @@
             let ads = adRequirements[balls];
             let bet = parseFloat(document.getElementById('betAmount').value) || 0;
             let totalCost = (bet * balls).toFixed(2);
-            document.getElementById('btnMainText').innerText = `Play ₹${totalCost} (Watch ${ads} Ad${ads>1?'s':''})`;
+            document.getElementById('btnMainText').innerText = `Play ${totalCost} MINE (Watch ${ads} Ad${ads>1?'s':''})`;
         }
 
         function prepareGame() {
-            if (isGameRunning) return;
-            soundClick();
+            if (isGameRunning) return; soundClick();
             ballsToDrop = parseInt(document.getElementById('ballCountSelect').value);
             currentBet = parseFloat(document.getElementById('betAmount').value);
             let totalCost = currentBet * ballsToDrop;
 
             if (isNaN(currentBet) || currentBet <= 0) { alert("Invalid Bet!"); return; }
-            if (totalCost > balance) { alert(`Insufficient Balance! You need ${totalCost.toFixed(2)} PRN for ${ballsToDrop} balls.`); return; }
+            if (totalCost > balance) { alert(`Insufficient Balance! You need ${totalCost.toFixed(2)} MINE for ${ballsToDrop} balls.`); return; }
             
-            totalAdsNeeded = adRequirements[ballsToDrop];
-            currentAdIndex = 1;
-            showAdVideo();
+            totalAdsNeeded = adRequirements[ballsToDrop]; currentAdIndex = 1; showAdVideo();
         }
 
         function showAdVideo() {
@@ -815,180 +862,79 @@
             const btn = document.getElementById('claimAdBtn');
             const progressText = document.getElementById('adProgressText');
             
-            modal.style.display = 'flex'; 
-            btn.disabled = true; 
-            btn.classList.remove('ready'); 
-            btn.innerText = "Please Wait...";
-            progressText.innerText = `Watching Ad ${currentAdIndex} of ${totalAdsNeeded}`;
+            modal.style.display = 'flex'; btn.disabled = true; btn.classList.remove('ready'); 
+            btn.innerText = "Please Wait..."; progressText.innerText = `Watching Ad ${currentAdIndex} of ${totalAdsNeeded}`;
             
-            let timeLeft = 3; 
-            timerText.innerText = `${timeLeft}s`;
-            
+            let timeLeft = 3; timerText.innerText = `${timeLeft}s`;
             let adInterval = setInterval(() => {
                 timeLeft--; timerText.innerText = `${timeLeft}s`;
                 if(timeLeft <= 0) {
-                    clearInterval(adInterval);
-                    timerText.innerText = "Ready!"; 
-                    btn.disabled = false; 
-                    btn.classList.add('ready'); 
-                    
-                    if(currentAdIndex < totalAdsNeeded) {
-                        btn.innerText = "Watch Next Ad";
-                    } else {
-                        btn.innerText = "Drop Balls Now!";
-                    }
+                    clearInterval(adInterval); timerText.innerText = "Ready!"; 
+                    btn.disabled = false; btn.classList.add('ready'); 
+                    if(currentAdIndex < totalAdsNeeded) btn.innerText = "Watch Next Ad"; else btn.innerText = "Drop Balls Now!";
                 }
             }, 1000);
         }
 
         function handleAdNext() {
             soundClick();
-            if (currentAdIndex < totalAdsNeeded) {
-                currentAdIndex++;
-                showAdVideo(); 
-            } else {
-                document.getElementById('adModal').style.display = 'none';
-                startBallStream(); 
-            }
+            if (currentAdIndex < totalAdsNeeded) { currentAdIndex++; showAdVideo(); } 
+            else { document.getElementById('adModal').style.display = 'none'; startBallStream(); }
         }
 
         function startBallStream() {
             let totalCost = currentBet * ballsToDrop;
-            balance -= totalCost; 
-
-            totalAdsWatched += totalAdsNeeded;
-            localStorage.setItem('sys_totalAds', totalAdsWatched);
-
-            updateAllBalances();
+            balance -= totalCost; totalAdsWatched += totalAdsNeeded;
+            localStorage.setItem('sys_totalAds', totalAdsWatched); updateAllBalances();
             
-            isGameRunning = true; 
-            document.getElementById('dropBtn').disabled = true;
+            isGameRunning = true; document.getElementById('dropBtn').disabled = true;
             document.getElementById('gameResultText').innerText = `Dropping ${ballsToDrop} Balls...`;
             document.getElementById('gameResultText').style.color = "var(--text-muted)";
             
-            totalWinForRound = 0;
-            activeBallsCount = ballsToDrop;
-
-            for(let i = 0; i < ballsToDrop; i++) {
-                setTimeout(() => { spawnAndAnimateBall(); }, i * 250); 
-            }
+            totalWinForRound = 0; activeBallsCount = ballsToDrop;
+            for(let i = 0; i < ballsToDrop; i++) { setTimeout(() => { spawnAndAnimateBall(); }, i * 250); }
         }
 
         function spawnAndAnimateBall() {
             const board = document.getElementById('board');
-            const ball = document.createElement('div');
-            ball.className = 'ball';
-            board.appendChild(ball);
+            const ball = document.createElement('div'); ball.className = 'ball'; board.appendChild(ball);
 
-            let keyframes = [];
-            let currentLeft = 50; 
-            let currentTop = 1; 
-            let topStep = 83 / 16; 
-            
+            let keyframes = []; let currentLeft = 50; let currentTop = 1; let topStep = 83 / 16; 
             keyframes.push({ left: `${currentLeft}%`, top: `${currentTop}%` });
-            
-            let rightCount = 0;   
-            let bounceTiming = [];
+            let rightCount = 0; let bounceTiming = [];
 
             for(let i=1; i<=16; i++) {
-                let goRight = Math.random() > 0.5; 
-                if (goRight) rightCount++;
-                let nextLeft = currentLeft + (goRight ? 2.8 : -2.8); 
-                let nextTop = currentTop + topStep; 
-
+                let goRight = Math.random() > 0.5; if (goRight) rightCount++;
+                let nextLeft = currentLeft + (goRight ? 2.8 : -2.8); let nextTop = currentTop + topStep; 
                 keyframes.push({ left: `${(currentLeft + nextLeft) / 2}%`, top: `${currentTop + (topStep * 0.1)}%`, easing: 'ease-out' });
                 keyframes.push({ left: `${nextLeft}%`, top: `${nextTop}%`, easing: 'ease-in' });
-
-                currentLeft = nextLeft; currentTop = nextTop;
-                bounceTiming.push(i * 180); 
+                currentLeft = nextLeft; currentTop = nextTop; bounceTiming.push(i * 180); 
             }
-            
             keyframes.push({ left: `${currentLeft}%`, top: `94%`, easing: 'ease-in' });
-            const animationTime = 16 * 180; 
-            let anim = ball.animate(keyframes, { duration: animationTime, fill: 'forwards' });
-
+            const animationTime = 16 * 180; let anim = ball.animate(keyframes, { duration: animationTime, fill: 'forwards' });
             bounceTiming.forEach(time => { setTimeout(soundPlink, time); });
 
             setTimeout(() => {
-                let mult = slotsMultiplier[rightCount]; 
-                let win = currentBet * mult; 
-                
-                balance += win; 
-                totalWinForRound += win;
-                updateAllBalances();
-                
-                if(mult >= 1.5) soundWin();
-                else if(mult < 1) soundLose();
-
-                ball.remove();
-                activeBallsCount--;
-
-                if(activeBallsCount === 0) {
-                    finishRound();
-                } else {
-                    document.getElementById('gameResultText').innerText = `Live Win: +${totalWinForRound.toFixed(2)}`;
-                    document.getElementById('gameResultText').style.color = "var(--primary)";
-                }
+                let mult = slotsMultiplier[rightCount]; let win = currentBet * mult; 
+                balance += win; totalWinForRound += win; updateAllBalances();
+                if(mult >= 1.5) soundWin(); else if(mult < 1) soundLose();
+                ball.remove(); activeBallsCount--;
+                if(activeBallsCount === 0) finishRound();
+                else { document.getElementById('gameResultText').innerText = `Live Win: +${totalWinForRound.toFixed(2)}`; document.getElementById('gameResultText').style.color = "var(--primary)"; }
             }, animationTime + 100);
         }
 
         function finishRound() {
             const resultText = document.getElementById('gameResultText');
-            let totalSpent = currentBet * ballsToDrop;
-            let netProfit = totalWinForRound - totalSpent;
-
-            if (netProfit > 0) {
-                resultText.innerText = `Massive Win! +${netProfit.toFixed(2)} Profit`;
-                resultText.style.color = "var(--accent)";
-            } else if (netProfit < 0) {
-                resultText.innerText = `Round Over. Loss: ${Math.abs(netProfit).toFixed(2)}`;
-                resultText.style.color = "var(--danger)";
-            } else {
-                resultText.innerText = `Round Over. Broke Even.`;
-                resultText.style.color = "var(--warning)";
-            }
-            isGameRunning = false; 
-            document.getElementById('dropBtn').disabled = false;
+            let totalSpent = currentBet * ballsToDrop; let netProfit = totalWinForRound - totalSpent;
+            if (netProfit > 0) { resultText.innerText = `Massive Win! +${netProfit.toFixed(2)} Profit`; resultText.style.color = "var(--accent)"; } 
+            else if (netProfit < 0) { resultText.innerText = `Round Over. Loss: ${Math.abs(netProfit).toFixed(2)}`; resultText.style.color = "var(--danger)"; } 
+            else { resultText.innerText = `Round Over. Broke Even.`; resultText.style.color = "var(--warning)"; }
+            isGameRunning = false; document.getElementById('dropBtn').disabled = false;
         }
 
-        // Initialize App
+        // INIT
         initApp();
-
-        // Custom handler to simulate video logic since real video ads in iframe might not callback consistently
-        var validEvents = ["load","completed", "click", "firstQartile", "midpoint", "thirdQuartile"];
-        let hasReportedShow = false;
-        
-        // Listen for generic message events from iframe
-        window.addEventListener("message", function(e) {
-            try {
-                var msg = JSON.parse(e.data);
-                if (msg && msg.event && validEvents.indexOf(msg.event) !== -1) {
-                    if(msg.event === 'completed') {
-                        handleAdNext();
-                    }
-                }
-            } catch(err) {
-                // Not JSON or other error, ignore
-            }
-        });
-        
-        let simInterval = setInterval(()=>{
-            let btn = document.getElementById('claimAdBtn');
-            if(document.getElementById('adModal').style.display === 'flex') {
-                if(btn.innerText === "Please Wait...") {
-                    setTimeout(()=>{
-                        btn.disabled = false; 
-                        btn.classList.add('ready');
-                        if(currentAdIndex < totalAdsNeeded) {
-                            btn.innerText = "Watch Next Ad";
-                        } else {
-                            btn.innerText = "Drop Balls Now!";
-                        }
-                        document.getElementById('adCountdown').innerText = "Ready!";
-                    }, 5000);
-                }
-            }
-        }, 2000);
 
     </script>
 </body>
