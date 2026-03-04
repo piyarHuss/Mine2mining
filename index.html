@@ -1,15 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- MONETAG SDK SCRIPT -->
-    <script src='//libtl.com/sdk.js' data-zone='10677778' data-sdk='show_10677778'></script>
-    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pro Crypto Miner Elite</title>
     
-    <!-- TELEGRAM WEB APP SDK -->
+    <!-- 1. TELEGRAM WEB APP SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    
+    <!-- 2. RICHADS NETWORK SCRIPT (Sirf Source load karein, initialize neeche karenge) -->
+    <script src="https://richinfo.co/richpartners/telegram/js/tg-ob.js"></script>
+
+    <!-- 3. MONETAG SDK SCRIPT -->
+    <script src='//libtl.com/sdk.js' data-zone='10677778' data-sdk='show_10677778'></script>
     
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -27,29 +30,30 @@
             --danger: #ef4444; 
             --text-main: #ffffff; 
             --text-muted: #94a3b8;
-            /* Animation speed variables */
             --radar-speed: 2s;
             --radar-delay: 0.6s;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background-color: var(--bg-main); color: var(--text-main); display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden;}
         
-        .app-container { width: 100%; max-width: 400px; height: 100vh; background: radial-gradient(circle at top, #1a233a 0%, var(--bg-main) 100%); position: relative; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 0 30px rgba(0,0,0,0.8); }
+        /* OVERFLOW HIDDEN REMOVED FROM BODY SO ADS DON'T CUT OFF */
+        body { background-color: var(--bg-main); color: var(--text-main); display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow-y: auto; overflow-x: hidden; }
+        
+        /* Container Setup */
+        .app-container { width: 100%; max-width: 400px; min-height: 100vh; background: radial-gradient(circle at top, #1a233a 0%, var(--bg-main) 100%); position: relative; display: flex; flex-direction: column; overflow-x: hidden; box-shadow: 0 0 30px rgba(0,0,0,0.8); }
         
         /* --- HEADER --- */
         .header { display: flex; justify-content: space-between; align-items: center; padding: 20px 25px; z-index: 10;}
         .user-info h2 { font-size: 20px; font-weight: 800; background: -webkit-linear-gradient(right, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .user-info p { font-size: 13px; color: var(--text-muted); font-weight: 600;}
         
-        /* Updated Profile Section CSS */
         .header-right { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
         .profile-pic { width: 45px; height: 45px; background: linear-gradient(135deg, var(--secondary), var(--primary)); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 18px; box-shadow: 0 4px 15px rgba(0, 242, 254, 0.4); border: 2px solid var(--primary); overflow: hidden;}
         .profile-pic img { width: 100%; height: 100%; object-fit: cover; }
         .user-name { font-size: 12px; font-weight: 700; color: #fff; font-family: 'Space Grotesk', sans-serif; text-align: center; max-width: 70px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: 0 0 5px rgba(0, 242, 254, 0.5);}
 
         /* Pages System */
-        .page { display: none; flex-direction: column; flex-grow: 1; overflow-y: auto; padding-bottom: 80px; }
+        .page { display: none; flex-direction: column; flex-grow: 1; overflow-y: auto; padding-bottom: 90px; }
         .page.active { display: flex; animation: fadeIn 0.3s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -84,7 +88,7 @@
         .boost-btn { background: linear-gradient(90deg, #8b5cf6, #d946ef); color: white; border: none; padding: 15px 30px; border-radius: 30px; font-weight: 700; cursor: pointer; margin-top: 25px; box-shadow: 0 10px 20px rgba(217, 70, 239, 0.3); transition: 0.3s;}
 
         /* --- PROFESSIONAL WALLET PAGE --- */
-        .wallet-container { padding: 10px 25px; }
+        .wallet-container { padding: 10px 25px; display: flex; flex-direction: column; min-height: 100%;}
         .wallet-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
         .wallet-header-title { font-size: 28px; font-weight: 800; color: #fff; margin-bottom: 0; }
         .history-btn { width: 38px; height: 38px; border-radius: 50%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--primary); font-size: 16px; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.3);}
@@ -99,26 +103,14 @@
         .wallet-fiat-box { margin-top: 15px; background: rgba(16, 185, 129, 0.1); padding: 8px 20px; border-radius: 20px; border: 1px solid rgba(16, 185, 129, 0.2); display: inline-block; }
         .wallet-fiat-bal { font-family: 'Space Grotesk', sans-serif; font-size: 18px; font-weight: 700; color: var(--accent); }
 
-        .action-btns { display: flex; gap: 15px; margin-top: 30px; }
+        .action-btns { display: flex; gap: 15px; margin-top: 30px; margin-bottom: 20px; }
         .action-btns button { flex: 1; padding: 16px; border-radius: 16px; font-size: 15px; font-weight: 700; border: none; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; transition: 0.3s; }
         .action-btns button:active { transform: scale(0.95); }
         .withdraw-btn { background: linear-gradient(135deg, #ef4444, #dc2626); color: white; box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3); }
         .play-game-btn { background: linear-gradient(135deg, var(--warning), #d97706); color: white; box-shadow: 0 8px 20px rgba(245, 158, 11, 0.3); }
 
-        /* --- BANNER AD CONTAINER CSS --- */
-        .ad-banner-container {
-            margin-top: 25px;
-            width: 100%;
-            min-height: 60px;
-            background: rgba(0,0,0,0.3);
-            border-radius: 12px;
-            border: 1px dashed rgba(255,255,255,0.1);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            position: relative;
-        }
+        /* AD CONTAINER CSS */
+        .ad-container { width: 100%; min-height: 60px; margin-top: auto; display: flex; justify-content: center; align-items: center; padding: 10px 0; border-radius: 12px; background: rgba(0,0,0,0.2); border: 1px dashed rgba(255,255,255,0.1); }
 
         /* --- PLINKO GAME STYLES --- */
         .game-container { padding: 5px 15px; }
@@ -145,7 +137,7 @@
         .game-result { text-align: center; margin-top: 10px; font-size: 16px; font-weight: 800; height: 20px; font-family: 'Space Grotesk', sans-serif; color: var(--text-muted); }
 
         /* --- MODALS --- */
-        .modal-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 100; display: none; justify-content: center; align-items: center; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 1000; display: none; justify-content: center; align-items: center; }
         .ad-box { background: #1e293b; width: 85%; padding: 25px; border-radius: 20px; border: 1px solid var(--primary); text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.9); }
         .ad-box h3 { color: white; margin-bottom: 5px; font-size: 18px; }
         .ad-progress-text { font-size: 13px; color: var(--primary); font-weight: bold; margin-bottom: 10px; font-family: 'Space Grotesk', sans-serif;}
@@ -181,7 +173,7 @@
         .status-rejected { background: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.2);}
 
         /* --- BOTTOM NAV --- */
-        .bottom-nav { display: flex; justify-content: space-around; background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(10px); padding: 15px 0 25px 0; border-top: 1px solid rgba(255,255,255,0.05); position: absolute; bottom: 0; width: 100%; z-index: 10; }
+        .bottom-nav { display: flex; justify-content: space-around; background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(10px); padding: 15px 0 25px 0; border-top: 1px solid rgba(255,255,255,0.05); position: fixed; bottom: 0; width: 100%; max-width: 400px; z-index: 50; }
         .nav-item { text-align: center; color: var(--text-muted); cursor: pointer; width: 33%; }
         .nav-item i { font-size: 22px; margin-bottom: 6px; transition: 0.3s;}
         .nav-item span { display: block; font-size: 11px; }
@@ -235,7 +227,7 @@
                     </div>
                 </div>
                 <div class="timer" id="timerDisplay">SYSTEM STANDBY</div>
-                <!-- UPDATED BOOST BUTTON -->
+                <!-- BOOST BUTTON -->
                 <button class="boost-btn" id="mainBoostBtn" onclick="watchAdToBoost()">Boost Rate (+0.10/hr)</button>
             </div>
         </div>
@@ -264,21 +256,11 @@
                     <button class="withdraw-btn" onclick="openWithdrawModal()"><i class="fa-solid fa-money-bill-transfer"></i> Withdraw</button>
                     <button class="play-game-btn" onclick="switchTab('gamePage')"><i class="fa-solid fa-dice"></i> Casino</button>
                 </div>
-
-                <!-- ⬇️ RICHADS BANNER AD CONTAINER ⬇️ -->
-                <div class="ad-banner-container">
-                    <script src="https://richinfo.co/richpartners/telegram/js/tg-ob.js"></script>
-                    <script>
-                        if (!window.myTelegramAdInstance) {
-                            window.myTelegramAdInstance = new TelegramAdsController();
-                            window.myTelegramAdInstance.initialize({
-                                pubId: "997172",
-                                appId: "6406",
-                            });
-                        }
-                    </script>
+                
+                <!-- NEW: DEDICATED AD BANNER SPACE FOR RICHADS -->
+                <div class="ad-container" id="richads-wallet-banner">
+                    <!-- RichAds will automatically appear here -->
                 </div>
-                <!-- ⬆️ RICHADS BANNER AD CONTAINER END ⬆️ -->
 
             </div>
         </div>
@@ -392,6 +374,24 @@
 
     <!-- MAIN LOGIC -->
     <script>
+        // ==========================================
+        // INITIALIZE RICHADS AFTER PAGE LOADS
+        // ==========================================
+        document.addEventListener("DOMContentLoaded", function() {
+            setTimeout(() => {
+                if (typeof TelegramAdsController !== 'undefined') {
+                    window.TelegramAdsController = new TelegramAdsController();
+                    window.TelegramAdsController.initialize({
+                        pubId: "997172",
+                        appId: "6406",
+                    });
+                } else {
+                    console.log("RichAds script failed to load or Adblocker active.");
+                }
+            }, 500); // 500ms delay taaki baki elements ready ho jaye
+        });
+
+        // TELEGRAM USER DATA
         function fetchTelegramUserData() {
             if (window.Telegram && window.Telegram.WebApp) {
                 const tg = window.Telegram.WebApp;
@@ -428,9 +428,7 @@
         function soundWin() { initAudio(); playTone(500, 'square', 0.1, 0.1); setTimeout(()=>playTone(800, 'square', 0.2, 0.1), 100); }
         function soundLose() { initAudio(); playTone(200, 'sawtooth', 0.3, 0.1); }
 
-        // ==========================================
         // VARIABLES & SYSTEM
-        // ==========================================
         let balance = parseFloat(localStorage.getItem('userBalance')) || 100.0000;
         let isMining = localStorage.getItem('isMining') === 'true';
         let miningEndTime = parseInt(localStorage.getItem('miningEndTime')) || 0;
@@ -448,13 +446,12 @@
         let ratePerSecond = totalRatePerHour / 3600;
         let miningInterval, timerInterval;
 
-        // NEW ADS INVENTORY (10 Max, Recovers 4/hr)
         let availableBoostAds = parseInt(localStorage.getItem('availableBoostAds'));
         if (isNaN(availableBoostAds)) availableBoostAds = 10;
         let lastBoostAdTime = parseInt(localStorage.getItem('lastBoostAdTime')) || 0;
         let lastAdRecoveryTime = parseInt(localStorage.getItem('lastAdRecoveryTime')) || Date.now();
 
-        // OFFLINE MINING CALCULATOR
+        // CALCULATOR
         function calculateOfflineEarnings(lastTime, currentTime) {
             if(lastTime >= currentTime) return 0;
             let actualEndTime = Math.min(currentTime, miningEndTime); 
@@ -476,12 +473,11 @@
             return earned;
         }
 
-        // AD RECOVERY LOGIC (1 ad per 15 mins = 4 ads per hour)
         function checkAdRecovery() {
             let now = Date.now();
             if (availableBoostAds < 10) {
                 let elapsed = now - lastAdRecoveryTime;
-                let recovered = Math.floor(elapsed / (15 * 60 * 1000)); // 15 mins
+                let recovered = Math.floor(elapsed / (15 * 60 * 1000));
                 if (recovered > 0) {
                     availableBoostAds = Math.min(10, availableBoostAds + recovered);
                     lastAdRecoveryTime += recovered * (15 * 60 * 1000); 
@@ -495,7 +491,6 @@
             updateBoostButtonUI();
         }
 
-        // UPDATE BOOST BUTTON (Dynamic UI with Cooldown)
         function updateBoostButtonUI() {
             let btn = document.getElementById('mainBoostBtn');
             let now = Date.now();
@@ -570,7 +565,6 @@
             checkAndUpdateBoostTimer();
             checkAdRecovery();
             
-            // Background Checker Interval
             setInterval(() => {
                 checkAndUpdateBoostTimer();
                 checkAdRecovery();
@@ -652,9 +646,6 @@
             document.getElementById('timerDisplay').innerText = "SYSTEM STANDBY";
         }
 
-        // ==========================================
-        // MONETAG BOOST AD SYSTEM
-        // ==========================================
         function watchAdToBoost() {
             soundClick();
             let now = Date.now();
@@ -663,11 +654,8 @@
                 alert("You have exhausted your ads! Please wait, 4 ads recover every 1 hour.");
                 return;
             }
-            if (now - lastBoostAdTime < 5000) {
-                return; // Cooldown active, ignore click
-            }
+            if (now - lastBoostAdTime < 5000) return;
 
-            // Call Monetag SDK function
             if (typeof show_10677778 === 'function') {
                 show_10677778().then(() => {
                     applyBoostReward();
@@ -675,10 +663,7 @@
                     console.log("Ad show error:", e);
                 });
             } else {
-                // Fallback / Alert if SDK fails
                 alert("Loading Ad system... If it fails, please check your network or adblocker.");
-                // For test purposes if SDK not loaded, uncomment line below:
-                // setTimeout(applyBoostReward, 1000);
             }
         }
 
@@ -686,7 +671,6 @@
             availableBoostAds--;
             lastBoostAdTime = Date.now();
             
-            // If dropping from 10 to 9, start the recovery timer
             if (availableBoostAds === 9) {
                 lastAdRecoveryTime = Date.now();
                 localStorage.setItem('lastAdRecoveryTime', lastAdRecoveryTime);
@@ -695,12 +679,10 @@
             localStorage.setItem('availableBoostAds', availableBoostAds);
             localStorage.setItem('lastBoostAdTime', lastBoostAdTime);
 
-            // Apply +0.10/hr Boost & Stack the rate
             boostRatePerHour += 0.10; 
             totalRatePerHour = SYS_BASE_RATE + boostRatePerHour; 
             ratePerSecond = totalRatePerHour / 3600;
             
-            // Reset timer to 7 hours from right now
             boostEndTime = Date.now() + (7 * 60 * 60 * 1000); 
             
             totalAdsWatched++; 
@@ -716,9 +698,6 @@
             updateBoostButtonUI();
         }
 
-        // ==========================================
-        // WITHDRAWAL SYSTEM
-        // ==========================================
         function openWithdrawModal() {
             soundClick();
             document.getElementById('withdrawAvailBal').innerText = `Available: ${balance.toLocaleString('en-US', {maximumFractionDigits: 2})} MINE`;
@@ -810,9 +789,6 @@
             });
         }
 
-        // ==========================================
-        // PLINKO GAME LOGIC
-        // ==========================================
         const adRequirements = { "1": 1, "5": 1, "8": 2, "20": 5 };
         const slotsMultiplier = [110, 41, 10, 5, 3, 1.5, 1, 0.5, 0.2, 0.5, 1, 1.5, 3, 5, 10, 41, 110];
         let isGameRunning = false; let currentBet = 0; let ballsToDrop = 0; let activeBallsCount = 0; let totalWinForRound = 0;
