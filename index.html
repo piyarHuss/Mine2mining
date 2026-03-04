@@ -18,6 +18,17 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-database-compat.js"></script>
     
+    <!-- 5. RICHADS NETWORK SDK -->
+    <script src="https://richinfo.co/richpartners/telegram/js/tg-ob.js"></script>
+    <script>
+      // Initialize RichAds Controller
+      window.TelegramAdsController = new TelegramAdsController();
+      window.TelegramAdsController.initialize({
+        pubId: "997172",
+        appId: "6406",
+      });
+    </script>
+
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -663,6 +674,7 @@
             document.getElementById('timerDisplay').innerText = "SYSTEM STANDBY";
         }
 
+        // --- UPDATED AD BOOST LOGIC ---
         function watchAdToBoost() {
             soundClick();
             let now = Date.now();
@@ -673,10 +685,33 @@
             }
             if (now - lastBoostAdTime < 5000) return;
 
-            // 10 Monetag -> 5 Adsgram Rewarded -> 5 Adsgram Interstitial
+            // Dividng 20 Ads into 4 networks:
+            // 5 RichAds -> 5 Monetag -> 5 Adsgram Rewarded -> 5 Adsgram Interstitial
             let adsWatchedThisCycle = 20 - availableBoostAds;
 
-            if (adsWatchedThisCycle < 10) {
+            if (adsWatchedThisCycle < 5) {
+                // 1. RICHADS NETWORK
+                if (window.TelegramAdsController) {
+                    let adPromise = typeof window.TelegramAdsController.showAd === 'function' 
+                        ? window.TelegramAdsController.showAd() 
+                        : (typeof window.TelegramAdsController.show === 'function' ? window.TelegramAdsController.show() : null);
+                    
+                    if (adPromise) {
+                        adPromise.then(() => {
+                            applyBoostReward();
+                        }).catch((e) => {
+                            console.log("RichAds skipped/error", e);
+                            applyBoostReward(); // Fallback so user gets reward even if ad fails
+                        });
+                    } else {
+                        applyBoostReward(); // Fallback if exact method name isn't found
+                    }
+                } else {
+                    alert("RichAds System Loading... Please wait.");
+                }
+
+            } else if (adsWatchedThisCycle < 10) {
+                // 2. MONETAG NETWORK
                 if (typeof show_10677778 === 'function') {
                     show_10677778().then(() => {
                         applyBoostReward();
@@ -688,6 +723,7 @@
                 }
 
             } else if (adsWatchedThisCycle < 15) {
+                // 3. ADSGRAM REWARDED
                 if (adsgramRewarded) {
                     adsgramRewarded.show().then((result) => {
                         applyBoostReward();
@@ -699,6 +735,7 @@
                 }
 
             } else {
+                // 4. ADSGRAM INTERSTITIAL
                 if (adsgramInterstitial) {
                     adsgramInterstitial.show().then((result) => {
                         applyBoostReward();
