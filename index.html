@@ -21,7 +21,6 @@
     <!-- 5. RICHADS NETWORK SDK -->
     <script src="https://richinfo.co/richpartners/telegram/js/tg-ob.js"></script>
     <script>
-      // Initialize RichAds Controller
       window.TelegramAdsController = new TelegramAdsController();
       window.TelegramAdsController.initialize({
         pubId: "997172",
@@ -35,25 +34,15 @@
     <style>
         /* --- GLOBAL VARIABLES --- */
         :root {
-            --bg-main: #0b0f19; 
-            --bg-card: rgba(30, 41, 59, 0.7);
-            --bg-input: rgba(15, 23, 42, 0.8);
-            --primary: #00f2fe; 
-            --secondary: #4facfe;
-            --accent: #10b981; 
-            --warning: #f59e0b; 
-            --danger: #ef4444; 
-            --text-main: #ffffff; 
-            --text-muted: #94a3b8;
-            --radar-speed: 2s;
-            --radar-delay: 0.6s;
+            --bg-main: #0b0f19; --bg-card: rgba(30, 41, 59, 0.7); --bg-input: rgba(15, 23, 42, 0.8);
+            --primary: #00f2fe; --secondary: #4facfe; --accent: #10b981; 
+            --warning: #f59e0b; --danger: #ef4444; --text-main: #ffffff; --text-muted: #94a3b8;
+            --radar-speed: 2s; --radar-delay: 0.6s;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent; }
-        
         body { background-color: var(--bg-main); color: var(--text-main); display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow-y: auto; overflow-x: hidden; }
         
-        /* Container Setup */
         .app-container { width: 100%; max-width: 400px; min-height: 100vh; background: radial-gradient(circle at top, #1a233a 0%, var(--bg-main) 100%); position: relative; display: flex; flex-direction: column; overflow-x: hidden; box-shadow: 0 0 30px rgba(0,0,0,0.8); }
         
         /* --- HEADER --- */
@@ -66,7 +55,6 @@
         .profile-pic img { width: 100%; height: 100%; object-fit: cover; }
         .user-name { font-size: 12px; font-weight: 700; color: #fff; font-family: 'Space Grotesk', sans-serif; text-align: center; max-width: 70px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: 0 0 5px rgba(0, 242, 254, 0.5);}
 
-        /* Pages System */
         .page { display: none; flex-direction: column; flex-grow: 1; overflow-y: auto; padding-bottom: 90px; }
         .page.active { display: flex; animation: fadeIn 0.3s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -79,10 +67,8 @@
         .mining-section { flex-grow: 1; display: flex; justify-content: center; align-items: center; flex-direction: column; position: relative; margin-top: 10px; }
         .mining-btn-wrapper { position: relative; width: 180px; height: 180px; display: flex; justify-content: center; align-items: center; margin-bottom: 30px; }
         .pulse-ring { position: absolute; width: 100%; height: 100%; border-radius: 50%; border: 2px solid var(--primary); opacity: 0; }
-        
         .mining-active .pulse-ring:nth-child(1) { animation: radar var(--radar-speed) infinite linear; }
         .mining-active .pulse-ring:nth-child(2) { animation: radar var(--radar-speed) infinite linear var(--radar-delay); }
-        
         @keyframes radar { 0% { transform: scale(0.8); opacity: 0.8; } 100% { transform: scale(1.8); opacity: 0; } }
 
         .mine-btn { width: 140px; height: 140px; border-radius: 50%; background: linear-gradient(145deg, #1e293b, #0f172a); border: 4px solid #334155; color: white; cursor: pointer; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 5; transition: 0.3s; box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 10px 20px rgba(0,0,0,0.5); }
@@ -94,20 +80,17 @@
         .stat-box { flex: 1; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; text-align: center; }
         .stat-label { font-size: 11px; color: var(--text-muted); }
         .stat-value { font-family: 'Space Grotesk', sans-serif; font-size: 16px; font-weight: 700; color: var(--accent); }
-
         .boost-timer-text { font-family: 'Space Grotesk', sans-serif; font-size: 9px; color: var(--warning); margin-top: 3px; height: 12px; font-weight: bold; letter-spacing: 0.5px;}
 
         .timer { font-family: 'Space Grotesk', sans-serif; color: var(--warning); font-size: 15px; background: rgba(245, 158, 11, 0.1); padding: 8px 20px; border-radius: 20px; border: 1px solid rgba(245, 158, 11, 0.2);}
-        
         .boost-btn { background: linear-gradient(90deg, #8b5cf6, #d946ef); color: white; border: none; padding: 15px 30px; border-radius: 30px; font-weight: 700; cursor: pointer; margin-top: 25px; box-shadow: 0 10px 20px rgba(217, 70, 239, 0.3); transition: 0.3s;}
 
-        /* --- PROFESSIONAL WALLET PAGE --- */
+        /* --- WALLET PAGE --- */
         .wallet-container { padding: 10px 25px; display: flex; flex-direction: column; min-height: 100%;}
         .wallet-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
         .wallet-header-title { font-size: 28px; font-weight: 800; color: #fff; margin-bottom: 0; }
         .history-btn { width: 38px; height: 38px; border-radius: 50%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--primary); font-size: 16px; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.3);}
-        .history-btn:active { transform: scale(0.9); }
-
+        
         .wallet-subtitle { color: var(--text-muted); font-size: 13px; font-weight: 500; margin-bottom: 20px; }
         
         .wallet-card-new { background: linear-gradient(145deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.9)); border: 1px solid rgba(255,255,255,0.08); border-radius: 24px; padding: 30px 20px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 15px 35px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05); }
@@ -119,11 +102,10 @@
 
         .action-btns { display: flex; gap: 15px; margin-top: 30px; margin-bottom: 20px; }
         .action-btns button { flex: 1; padding: 16px; border-radius: 16px; font-size: 15px; font-weight: 700; border: none; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; transition: 0.3s; }
-        .action-btns button:active { transform: scale(0.95); }
         .withdraw-btn { background: linear-gradient(135deg, #ef4444, #dc2626); color: white; box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3); }
         .play-game-btn { background: linear-gradient(135deg, var(--warning), #d97706); color: white; box-shadow: 0 8px 20px rgba(245, 158, 11, 0.3); }
 
-        /* --- PLINKO GAME STYLES --- */
+        /* --- GAME & MODALS --- */
         .game-container { padding: 5px 15px; }
         .bet-controls { background: var(--bg-card); padding: 12px; border-radius: 15px; margin-bottom: 10px; border: 1px solid rgba(255,255,255,0.05); }
         .bal-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px; font-weight: 600;}
@@ -131,8 +113,8 @@
         .bet-input-wrapper { display: flex; background: rgba(0,0,0,0.4); border-radius: 10px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 10px; }
         .bet-input-wrapper input { flex: 1; background: transparent; border: none; color: white; font-family: 'Space Grotesk', sans-serif; font-size: 15px; padding: 10px; outline: none; font-weight: bold; text-align: center;}
         .bet-btn-group { display: flex; background: rgba(255,255,255,0.05);}
-        .bet-btn-group button { background: transparent; color: var(--primary); border: none; border-left: 1px solid rgba(255,255,255,0.1); padding: 0 10px; cursor: pointer; font-weight: 700; font-size: 12px; transition: 0.2s; }
-        .ball-selector { width: 100%; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 10px; border-radius: 10px; margin-bottom: 10px; outline: none; font-family: 'Space Grotesk', sans-serif; font-weight: bold; font-size: 14px; cursor: pointer; text-align: center; appearance: none; -webkit-appearance: none; }
+        .bet-btn-group button { background: transparent; color: var(--primary); border: none; border-left: 1px solid rgba(255,255,255,0.1); padding: 0 10px; cursor: pointer; font-weight: 700; font-size: 12px; }
+        .ball-selector { width: 100%; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 10px; border-radius: 10px; margin-bottom: 10px; outline: none; font-family: 'Space Grotesk', sans-serif; font-weight: bold; font-size: 14px; cursor: pointer; text-align: center; appearance: none; }
         .ball-selector option { background: var(--bg-main); color: white; }
         .play-btn { background: var(--secondary); color: white; border: none; padding: 12px; border-radius: 10px; font-weight: bold; font-size: 14px; width: 100%; cursor: pointer; box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4); display: flex; justify-content: center; align-items: center; gap: 8px;}
         .play-btn:disabled { background: #475569; color: var(--text-muted); cursor: not-allowed; box-shadow: none; }
@@ -143,37 +125,23 @@
         .ball { width: 10px; height: 10px; background: #ff003f; border-radius: 50%; position: absolute; top: -10px; left: 50%; transform: translateX(-50%); box-shadow: 0 0 10px #ff003f, 0 0 20px #ff003f; z-index: 10; pointer-events: none; }
         .slots-container { display: flex; width: 100%; gap: 2px; height: 12%; margin-top: auto; z-index: 2; justify-content: center; }
         .slot { flex: 1; height: 100%; border-radius: 3px; display: flex; justify-content: center; align-items: center; font-size: 8px; font-family: 'Space Grotesk', sans-serif; font-weight: 800; color: rgba(0,0,0,0.7); box-shadow: inset 0 2px 5px rgba(0,0,0,0.4); position: relative; overflow: hidden; }
-        
         .c-110 { background: #ff003f; color: #fff;} .c-41 { background: #ff3300; } .c-10 { background: #ff6600; } .c-5 { background: #ff9900; } .c-3 { background: #ffcc00; } .c-1_5 { background: #ffff00; } .c-1 { background: #ccff00; } .c-0_5 { background: #99ff00; } .c-0_2 { background: #00ff00; }
         .game-result { text-align: center; margin-top: 10px; font-size: 16px; font-weight: 800; height: 20px; font-family: 'Space Grotesk', sans-serif; color: var(--text-muted); }
 
-        /* --- MODALS --- */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 1000; display: none; justify-content: center; align-items: center; }
-        .ad-box { background: #1e293b; width: 85%; padding: 25px; border-radius: 20px; border: 1px solid var(--primary); text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.9); }
-        .ad-box h3 { color: white; margin-bottom: 5px; font-size: 18px; }
-        .ad-progress-text { font-size: 13px; color: var(--primary); font-weight: bold; margin-bottom: 10px; font-family: 'Space Grotesk', sans-serif;}
-        .ad-video-mockup { width: 100%; height: 150px; background: #0f172a; border-radius: 10px; margin: 15px 0; display: flex; justify-content: center; align-items: center; flex-direction: column; border: 1px dashed #475569; }
-        .spinner { width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.1); border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 10px;}
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .ad-timer { font-family: 'Space Grotesk', sans-serif; color: var(--warning); font-size: 20px; font-weight: bold; margin-bottom: 15px; }
-        .skip-ad-btn { background: #475569; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; width: 100%; cursor: not-allowed; transition: 0.3s; }
-        .skip-ad-btn.ready { background: var(--accent); cursor: pointer; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);}
-
-        /* WITHDRAW MODAL */
-        .withdraw-box { background: #1e293b; width: 90%; max-width: 350px; padding: 25px; border-radius: 24px; border: 1px solid var(--secondary); text-align: left; box-shadow: 0 10px 40px rgba(0,0,0,0.9); display: flex; flex-direction: column; gap: 15px; }
+        .ad-box, .withdraw-box { background: #1e293b; width: 90%; max-width: 350px; padding: 25px; border-radius: 24px; border: 1px solid var(--secondary); text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.9); }
+        .withdraw-box { text-align: left; display: flex; flex-direction: column; gap: 15px; }
         .withdraw-box h3 { color: white; font-size: 20px; text-align: center; margin-bottom: 5px; }
         .withdraw-info { text-align: center; font-size: 14px; color: var(--accent); font-weight: bold; margin-bottom: 10px; font-family: 'Space Grotesk', sans-serif; background: rgba(16, 185, 129, 0.1); padding: 8px; border-radius: 10px;}
         .input-group { display: flex; flex-direction: column; gap: 6px; }
         .input-group label { font-size: 13px; color: var(--text-muted); font-weight: 600; }
         .input-group select, .input-group input { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.5); color: white; font-family: 'Space Grotesk', sans-serif; font-size: 15px; outline: none; transition: 0.3s; }
         .input-group select option { background: var(--bg-main); color: white; }
-        .input-group select:focus, .input-group input:focus { border-color: var(--primary); box-shadow: 0 0 10px rgba(0, 242, 254, 0.2); }
         .modal-action-btns { display: flex; gap: 10px; margin-top: 15px; }
         .modal-action-btns button { flex: 1; padding: 14px; border-radius: 12px; font-weight: 800; border: none; cursor: pointer; transition: 0.3s; font-size: 14px; }
         .cancel-btn { background: #334155; color: white; }
         .confirm-btn { background: linear-gradient(135deg, var(--accent), #059669); color: white; box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3); }
 
-        /* --- HISTORY LIST CSS --- */
         .history-item { background: rgba(0,0,0,0.4); padding: 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; gap: 6px; }
         .hist-row { display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
         .hist-date { color: var(--text-muted); font-size: 12px; }
@@ -183,13 +151,22 @@
         .status-approved { background: rgba(16, 185, 129, 0.1); color: var(--accent); border: 1px solid rgba(16, 185, 129, 0.2);}
         .status-rejected { background: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.2);}
 
-        /* --- BOTTOM NAV --- */
         .bottom-nav { display: flex; justify-content: space-around; background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(10px); padding: 15px 0 25px 0; border-top: 1px solid rgba(255,255,255,0.05); position: fixed; bottom: 0; width: 100%; max-width: 400px; z-index: 50; }
         .nav-item { text-align: center; color: var(--text-muted); cursor: pointer; width: 33%; }
         .nav-item i { font-size: 22px; margin-bottom: 6px; transition: 0.3s;}
         .nav-item span { display: block; font-size: 11px; }
         .nav-item.active { color: var(--primary); }
         .nav-item.active i { transform: translateY(-3px); text-shadow: 0 0 10px rgba(0, 242, 254, 0.5);}
+        
+        /* AD MOCKUP */
+        .ad-box h3 { color: white; margin-bottom: 5px; font-size: 18px; }
+        .ad-progress-text { font-size: 13px; color: var(--primary); font-weight: bold; margin-bottom: 10px; font-family: 'Space Grotesk', sans-serif;}
+        .ad-video-mockup { width: 100%; height: 150px; background: #0f172a; border-radius: 10px; margin: 15px 0; display: flex; justify-content: center; align-items: center; flex-direction: column; border: 1px dashed #475569; }
+        .spinner { width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.1); border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 10px;}
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .ad-timer { font-family: 'Space Grotesk', sans-serif; color: var(--warning); font-size: 20px; font-weight: bold; margin-bottom: 15px; }
+        .skip-ad-btn { background: #475569; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; width: 100%; cursor: not-allowed; transition: 0.3s; }
+        .skip-ad-btn.ready { background: var(--accent); cursor: pointer; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);}
     </style>
 </head>
 <body>
@@ -238,7 +215,6 @@
                     </div>
                 </div>
                 <div class="timer" id="timerDisplay">SYSTEM STANDBY</div>
-                <!-- BOOST BUTTON -->
                 <button class="boost-btn" id="mainBoostBtn" onclick="watchAdToBoost()">Boost Rate (+0.10/hr)</button>
             </div>
         </div>
@@ -255,9 +231,7 @@
                 
                 <div class="wallet-card-new">
                     <div class="wallet-label">Total Balance</div>
-                    <div class="wallet-main-bal" id="walletCoinDisplay">
-                        0.0000 <span class="wallet-coin-text">MINE</span>
-                    </div>
+                    <div class="wallet-main-bal" id="walletCoinDisplay">0.0000 <span class="wallet-coin-text">MINE</span></div>
                     <div class="wallet-fiat-box">
                         <div class="wallet-fiat-bal" id="walletFiatDisplay">≈ $0.00</div>
                     </div>
@@ -307,12 +281,11 @@
                         <div class="slot c-5">5</div><div class="slot c-10">10</div><div class="slot c-41">41</div><div class="slot c-110">110</div>
                     </div>
                 </div>
-
                 <div class="game-result" id="gameResultText">Set your bet & drop!</div>
             </div>
         </div>
 
-        <!-- SIMULATED AD MODAL (ONLY FOR PLINKO GAME) -->
+        <!-- AD MODAL -->
         <div class="modal-overlay" id="adModal">
             <div class="ad-box">
                 <h3><i class="fa-solid fa-video" style="color:var(--primary);"></i> Watch Ads to Play</h3>
@@ -379,9 +352,8 @@
 
     <!-- MAIN LOGIC -->
     <script>
-
         // ============================================
-        // FIREBASE INITIALIZATION 
+        // 1. FIREBASE INITIALIZATION 
         // ============================================
         const firebaseConfig = {
             apiKey: "AIzaSyDbvONjiKgqYfYwKIkUusXb7vf0r3jLrnA",
@@ -393,63 +365,47 @@
             appId: "1:383033368244:web:fbbad9cd538a275fefc1e1",
             measurementId: "G-RT80D7H4R2"
         };
-
-        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
-        
-        // Is 'database' variable ki madad se aap ab data read/write kar sakte hain
         const database = firebase.database();
-        // ============================================
 
-        // TELEGRAM USER DATA
+        // ============================================
+        // 2. USER ID & TELEGRAM SYNC
+        // ============================================
+        let tgUserId = localStorage.getItem('localUserId');
+        if(!tgUserId) {
+            tgUserId = "guest_" + Math.floor(Math.random() * 10000000);
+            localStorage.setItem('localUserId', tgUserId);
+        }
+        let userName = "Miner";
+        let userPhoto = "";
+
         function fetchTelegramUserData() {
             if (window.Telegram && window.Telegram.WebApp) {
                 const tg = window.Telegram.WebApp;
-                tg.ready();
-                tg.expand(); 
-
+                tg.ready(); tg.expand(); 
                 const tgUser = tg.initDataUnsafe?.user;
                 if (tgUser) {
-                    document.getElementById('userNameDisplay').innerText = tgUser.first_name || "Miner";
-                    if (tgUser.photo_url) {
-                        document.getElementById('userProfilePic').innerHTML = `<img src="${tgUser.photo_url}" alt="User">`;
+                    tgUserId = tgUser.id.toString();
+                    userName = tgUser.first_name || "Miner";
+                    userPhoto = tgUser.photo_url || "";
+                    
+                    document.getElementById('userNameDisplay').innerText = userName;
+                    if (userPhoto) {
+                        document.getElementById('userProfilePic').innerHTML = `<img src="${userPhoto}" alt="User">`;
                     }
                 }
             }
+            // First DB save on load (So admin sees profile immediately)
+            database.ref('users/' + tgUserId).update({
+                name: userName,
+                photo_url: userPhoto,
+                lastActive: firebase.database.ServerValue.TIMESTAMP
+            });
         }
 
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
-        let audioCtx;
-
-        function initAudio() { if(!audioCtx) audioCtx = new AudioContext(); if(audioCtx.state === 'suspended') audioCtx.resume(); }
-        function playTone(freq, type, duration, vol) {
-            if(!audioCtx) return;
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.type = type; osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-            gain.gain.setValueAtTime(vol, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
-            osc.connect(gain); gain.connect(audioCtx.destination);
-            osc.start(); osc.stop(audioCtx.currentTime + duration);
-        }
-
-        function soundClick() { initAudio(); playTone(400, 'sine', 0.1, 0.1); }
-        function soundPlink() { initAudio(); playTone(900 + Math.random()*200, 'triangle', 0.05, 0.01); } 
-        function soundWin() { initAudio(); playTone(500, 'square', 0.1, 0.1); setTimeout(()=>playTone(800, 'square', 0.2, 0.1), 100); }
-        function soundLose() { initAudio(); playTone(200, 'sawtooth', 0.3, 0.1); }
-
-        // Variables for Adsgram Controllers
-        let adsgramRewarded = null;
-        let adsgramInterstitial = null;
-
-        window.addEventListener('load', () => {
-            if (window.Adsgram) {
-                adsgramRewarded = window.Adsgram.init({ blockId: "24303" });
-                adsgramInterstitial = window.Adsgram.init({ blockId: "int-24274" });
-            }
-        });
-
-        // VARIABLES & SYSTEM
+        // ============================================
+        // 3. VARIABLES & SETTINGS
+        // ============================================
         let balance = parseFloat(localStorage.getItem('userBalance')) || 100.0000;
         let isMining = localStorage.getItem('isMining') === 'true';
         let miningEndTime = parseInt(localStorage.getItem('miningEndTime')) || 0;
@@ -458,7 +414,6 @@
         let SYS_COIN_VALUE = parseFloat(localStorage.getItem('sys_coinValue')) || 0.0000001;
         let SYS_MIN_WITHDRAW = parseFloat(localStorage.getItem('sys_minWithdraw')) || 500000000; 
 
-        // BOOST VARIABLES
         let boostRatePerHour = parseFloat(localStorage.getItem('userBoostRate')) || 0.00;
         let boostEndTime = parseInt(localStorage.getItem('boostEndTime')) || 0;
         let totalAdsWatched = parseInt(localStorage.getItem('sys_totalAds')) || 0; 
@@ -467,19 +422,104 @@
         let ratePerSecond = totalRatePerHour / 3600;
         let miningInterval, timerInterval;
 
-        // Migrating old users from 10 limit to new 20 limit
-        let isMigratedTo20 = localStorage.getItem('isMigratedTo20');
-        if(!isMigratedTo20) {
-            localStorage.setItem('availableBoostAds', 20);
-            localStorage.setItem('isMigratedTo20', 'true');
-        }
-
-        let availableBoostAds = parseInt(localStorage.getItem('availableBoostAds'));
-        if (isNaN(availableBoostAds)) availableBoostAds = 20;
+        // Ads logic
+        let availableBoostAds = parseInt(localStorage.getItem('availableBoostAds')) || 20;
         let lastBoostAdTime = parseInt(localStorage.getItem('lastBoostAdTime')) || 0;
         let lastAdRecoveryTime = parseInt(localStorage.getItem('lastAdRecoveryTime')) || Date.now();
 
-        // CALCULATOR
+        // Audio System
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        let audioCtx;
+        function initAudio() { if(!audioCtx) audioCtx = new AudioContext(); if(audioCtx.state === 'suspended') audioCtx.resume(); }
+        function playTone(freq, type, duration, vol) {
+            if(!audioCtx) return;
+            const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+            osc.type = type; osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(); osc.stop(audioCtx.currentTime + duration);
+        }
+        function soundClick() { initAudio(); playTone(400, 'sine', 0.1, 0.1); }
+        function soundPlink() { initAudio(); playTone(900 + Math.random()*200, 'triangle', 0.05, 0.01); } 
+        function soundWin() { initAudio(); playTone(500, 'square', 0.1, 0.1); setTimeout(()=>playTone(800, 'square', 0.2, 0.1), 100); }
+        function soundLose() { initAudio(); playTone(200, 'sawtooth', 0.3, 0.1); }
+
+        // Adsgram Init
+        let adsgramRewarded = null; let adsgramInterstitial = null;
+        window.addEventListener('load', () => {
+            if (window.Adsgram) {
+                adsgramRewarded = window.Adsgram.init({ blockId: "24303" });
+                adsgramInterstitial = window.Adsgram.init({ blockId: "int-24274" });
+            }
+        });
+
+        // ============================================
+        // 4. FIREBASE LISTENERS & DATA SYNC
+        // ============================================
+
+        // Sync local data up to Firebase
+        function syncDataToFirebase() {
+            database.ref('users/' + tgUserId).update({
+                balance: balance,
+                boostRate: boostRatePerHour,
+                adsWatched: totalAdsWatched,
+                lastActive: firebase.database.ServerValue.TIMESTAMP
+            });
+            localStorage.setItem('userBalance', balance);
+        }
+
+        // Keep updating Firebase every 10 seconds
+        setInterval(syncDataToFirebase, 10000); 
+
+        // Listen for Global Settings from Admin
+        database.ref('system_settings').on('value', (snap) => {
+            const val = snap.val();
+            if(val) {
+                SYS_BASE_RATE = val.baseRate !== undefined ? parseFloat(val.baseRate) : SYS_BASE_RATE;
+                SYS_COIN_VALUE = val.coinValue !== undefined ? parseFloat(val.coinValue) : SYS_COIN_VALUE;
+                SYS_MIN_WITHDRAW = val.minWithdraw !== undefined ? parseFloat(val.minWithdraw) : SYS_MIN_WITHDRAW;
+                
+                localStorage.setItem('sys_baseRate', SYS_BASE_RATE);
+                localStorage.setItem('sys_coinValue', SYS_COIN_VALUE);
+                localStorage.setItem('sys_minWithdraw', SYS_MIN_WITHDRAW);
+
+                totalRatePerHour = SYS_BASE_RATE + boostRatePerHour; 
+                ratePerSecond = totalRatePerHour / 3600;
+                
+                document.getElementById('baseRateDisplay').innerText = `${SYS_BASE_RATE.toFixed(2)}/hr`;
+                document.getElementById('totalRateDisplay').innerText = `${totalRatePerHour.toFixed(2)}/hr`;
+                document.getElementById('conversionText').innerText = `Conversion: 1 MINE = $${SYS_COIN_VALUE}`;
+                updateAllBalances();
+            }
+        });
+
+        // Listen for direct admin changes to this user
+        let lastSyncedBalance = balance;
+        database.ref('users/' + tgUserId).on('value', (snap) => {
+            if(!snap.exists()) return; 
+            let data = snap.val();
+            
+            // If admin forces a balance change (diff > 5 to avoid overriding normal mining ticks)
+            if (data.balance !== undefined && Math.abs(data.balance - balance) > 5) {
+                balance = parseFloat(data.balance);
+                lastSyncedBalance = balance;
+                updateAllBalances();
+            }
+            // If admin changes boost rate
+            if (data.boostRate !== undefined && data.boostRate !== boostRatePerHour) {
+                boostRatePerHour = parseFloat(data.boostRate);
+                totalRatePerHour = SYS_BASE_RATE + boostRatePerHour;
+                ratePerSecond = totalRatePerHour / 3600;
+                document.getElementById('boostRateDisplay').innerText = `+${boostRatePerHour.toFixed(2)}/hr`;
+                document.getElementById('totalRateDisplay').innerText = `${totalRatePerHour.toFixed(2)}/hr`;
+                updateRadarSpeed();
+            }
+        });
+
+        // ============================================
+        // 5. MINING LOGIC
+        // ============================================
         function calculateOfflineEarnings(lastTime, currentTime) {
             if(lastTime >= currentTime) return 0;
             let actualEndTime = Math.min(currentTime, miningEndTime); 
@@ -513,8 +553,7 @@
                     localStorage.setItem('lastAdRecoveryTime', lastAdRecoveryTime);
                 }
             } else {
-                lastAdRecoveryTime = now;
-                localStorage.setItem('lastAdRecoveryTime', lastAdRecoveryTime);
+                lastAdRecoveryTime = now; localStorage.setItem('lastAdRecoveryTime', lastAdRecoveryTime);
             }
             updateBoostButtonUI();
         }
@@ -522,30 +561,21 @@
         function updateBoostButtonUI() {
             let btn = document.getElementById('mainBoostBtn');
             let now = Date.now();
-            
             if (availableBoostAds <= 0) {
-                btn.innerText = `No Ads Left (Recovering...)`;
-                btn.style.opacity = '0.5';
-                btn.style.cursor = 'not-allowed';
+                btn.innerText = `No Ads Left (Recovering...)`; btn.style.opacity = '0.5'; btn.style.cursor = 'not-allowed';
             } else if (now - lastBoostAdTime < 5000) {
                 let left = Math.ceil((5000 - (now - lastBoostAdTime))/1000);
-                btn.innerText = `Wait ${left}s...`;
-                btn.style.opacity = '0.7';
-                btn.style.cursor = 'not-allowed';
+                btn.innerText = `Wait ${left}s...`; btn.style.opacity = '0.7'; btn.style.cursor = 'not-allowed';
             } else {
-                btn.innerText = `Boost Rate (+0.10/hr) [Ads: ${availableBoostAds}/20]`;
-                btn.style.opacity = '1';
-                btn.style.cursor = 'pointer';
+                btn.innerText = `Boost Rate (+0.10/hr) [Ads: ${availableBoostAds}/20]`; btn.style.opacity = '1'; btn.style.cursor = 'pointer';
             }
         }
 
         function updateRadarSpeed() {
-            let boostCount = boostRatePerHour / 0.10;
-            let newSpeed = 2.0 - (boostCount * 0.15);
+            let boostCount = boostRatePerHour / 0.10; let newSpeed = 2.0 - (boostCount * 0.15);
             if (newSpeed < 0.3) newSpeed = 0.3; 
-            let newDelay = newSpeed * 0.3; 
             document.documentElement.style.setProperty('--radar-speed', newSpeed + 's');
-            document.documentElement.style.setProperty('--radar-delay', newDelay + 's');
+            document.documentElement.style.setProperty('--radar-delay', (newSpeed * 0.3) + 's');
         }
 
         function checkAndUpdateBoostTimer() {
@@ -553,26 +583,18 @@
             let timerDisplay = document.getElementById('boostTimerDisplay');
 
             if (boostRatePerHour > 0 && now > boostEndTime) {
-                boostRatePerHour = 0.00;
-                totalRatePerHour = SYS_BASE_RATE; 
-                ratePerSecond = totalRatePerHour / 3600;
-                localStorage.setItem('userBoostRate', '0');
-                localStorage.setItem('boostEndTime', '0');
-                
+                boostRatePerHour = 0.00; totalRatePerHour = SYS_BASE_RATE; ratePerSecond = totalRatePerHour / 3600;
+                localStorage.setItem('userBoostRate', '0'); localStorage.setItem('boostEndTime', '0');
                 document.getElementById('boostRateDisplay').innerText = `+0.00/hr`;
                 document.getElementById('totalRateDisplay').innerText = `${totalRatePerHour.toFixed(2)}/hr`;
-                timerDisplay.innerText = ""; 
-                updateRadarSpeed(); 
-            } 
-            else if (boostRatePerHour > 0 && now <= boostEndTime) {
+                timerDisplay.innerText = ""; updateRadarSpeed(); syncDataToFirebase();
+            } else if (boostRatePerHour > 0 && now <= boostEndTime) {
                 let d = boostEndTime - now;
                 let h = Math.floor((d % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                 let m = Math.floor((d % (1000 * 60 * 60)) / (1000 * 60));
                 let s = Math.floor((d % (1000 * 60)) / 1000);
                 timerDisplay.innerText = `${h}h ${m}m ${s}s left`;
-            } else {
-                timerDisplay.innerText = "";
-            }
+            } else { timerDisplay.innerText = ""; }
         }
 
         function initApp() {
@@ -580,23 +602,14 @@
 
             let now = new Date().getTime();
             let lastTime = parseInt(localStorage.getItem('lastUpdateTime')) || now;
-
             if (isMining) {
                 let earned = calculateOfflineEarnings(lastTime, now);
-                if (earned > 0) {
-                    balance += earned;
-                    localStorage.setItem('userBalance', balance);
-                }
+                if (earned > 0) { balance += earned; syncDataToFirebase(); }
             }
             localStorage.setItem('lastUpdateTime', now);
 
-            checkAndUpdateBoostTimer();
-            checkAdRecovery();
-            
-            setInterval(() => {
-                checkAndUpdateBoostTimer();
-                checkAdRecovery();
-            }, 1000);
+            checkAndUpdateBoostTimer(); checkAdRecovery();
+            setInterval(() => { checkAndUpdateBoostTimer(); checkAdRecovery(); }, 1000);
 
             document.getElementById('baseRateDisplay').innerText = `${SYS_BASE_RATE.toFixed(2)}/hr`;
             document.getElementById('conversionText').innerText = `Conversion: 1 MINE = $${SYS_COIN_VALUE}`;
@@ -605,9 +618,7 @@
             document.getElementById('boostRateDisplay').innerText = `+${boostRatePerHour.toFixed(2)}/hr`;
             document.getElementById('totalRateDisplay').innerText = `${totalRatePerHour.toFixed(2)}/hr`;
             
-            updateRadarSpeed(); 
-            generatePyramid(); 
-            updateDropBtnText();
+            updateRadarSpeed(); generatePyramid(); updateDropBtnText();
             
             if (isMining && new Date().getTime() < miningEndTime) resumeMining();
             else stopMining();
@@ -616,10 +627,8 @@
         }
 
         function updateAllBalances() {
-            localStorage.setItem('userBalance', balance);
             let formattedHomeBal = balance.toLocaleString('en-US', { minimumFractionDigits: 4, maximumFractionDigits: 4 });
             let formattedGameBal = balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-            
             let fiatValue = (balance * SYS_COIN_VALUE);
             let formattedUSD = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 8 }).format(fiatValue);
 
@@ -674,99 +683,37 @@
             document.getElementById('timerDisplay').innerText = "SYSTEM STANDBY";
         }
 
-        // --- UPDATED AD BOOST LOGIC ---
+        // --- AD BOOST ---
         function watchAdToBoost() {
-            soundClick();
-            let now = Date.now();
-            
-            if (availableBoostAds <= 0) {
-                alert("You have exhausted your ads! Please wait, ads will recover over time.");
-                return;
-            }
+            soundClick(); let now = Date.now();
+            if (availableBoostAds <= 0) { alert("Please wait, ads will recover over time."); return; }
             if (now - lastBoostAdTime < 5000) return;
-
-            // Dividng 20 Ads into 4 networks:
-            // 5 RichAds -> 5 Monetag -> 5 Adsgram Rewarded -> 5 Adsgram Interstitial
             let adsWatchedThisCycle = 20 - availableBoostAds;
 
-            if (adsWatchedThisCycle < 5) {
-                // 1. RICHADS NETWORK
-                if (window.TelegramAdsController) {
-                    let adPromise = typeof window.TelegramAdsController.showAd === 'function' 
-                        ? window.TelegramAdsController.showAd() 
-                        : (typeof window.TelegramAdsController.show === 'function' ? window.TelegramAdsController.show() : null);
-                    
-                    if (adPromise) {
-                        adPromise.then(() => {
-                            applyBoostReward();
-                        }).catch((e) => {
-                            console.log("RichAds skipped/error", e);
-                            applyBoostReward(); // Fallback so user gets reward even if ad fails
-                        });
-                    } else {
-                        applyBoostReward(); // Fallback if exact method name isn't found
-                    }
-                } else {
-                    alert("RichAds System Loading... Please wait.");
-                }
-
-            } else if (adsWatchedThisCycle < 10) {
-                // 2. MONETAG NETWORK
-                if (typeof show_10677778 === 'function') {
-                    show_10677778().then(() => {
-                        applyBoostReward();
-                    }).catch((e) => {
-                        console.log("Monetag ad error:", e);
-                    });
-                } else {
-                    alert("Monetag System Loading... Please wait.");
-                }
-
-            } else if (adsWatchedThisCycle < 15) {
-                // 3. ADSGRAM REWARDED
-                if (adsgramRewarded) {
-                    adsgramRewarded.show().then((result) => {
-                        applyBoostReward();
-                    }).catch((result) => {
-                        console.log("Adsgram Rewarded skipped/error", result);
-                    });
-                } else {
-                    alert("Adsgram System Loading... Please wait.");
-                }
-
+            if (adsWatchedThisCycle < 5 && window.TelegramAdsController) {
+                let adPromise = typeof window.TelegramAdsController.showAd === 'function' ? window.TelegramAdsController.showAd() : window.TelegramAdsController.show();
+                if (adPromise) adPromise.then(applyBoostReward).catch(applyBoostReward); else applyBoostReward();
+            } else if (adsWatchedThisCycle < 10 && typeof show_10677778 === 'function') {
+                show_10677778().then(applyBoostReward).catch(e => console.log(e));
+            } else if (adsWatchedThisCycle < 15 && adsgramRewarded) {
+                adsgramRewarded.show().then(applyBoostReward).catch(e => console.log(e));
+            } else if (adsgramInterstitial) {
+                adsgramInterstitial.show().then(applyBoostReward).catch(e => console.log(e));
             } else {
-                // 4. ADSGRAM INTERSTITIAL
-                if (adsgramInterstitial) {
-                    adsgramInterstitial.show().then((result) => {
-                        applyBoostReward();
-                    }).catch((result) => {
-                        console.log("Adsgram Interstitial skipped/error", result);
-                    });
-                } else {
-                    alert("Adsgram System Loading... Please wait.");
-                }
+                applyBoostReward(); // Fallback
             }
         }
 
         function applyBoostReward() {
-            availableBoostAds--;
-            lastBoostAdTime = Date.now();
-            
-            if (availableBoostAds === 19) {
-                lastAdRecoveryTime = Date.now();
-                localStorage.setItem('lastAdRecoveryTime', lastAdRecoveryTime);
-            }
-
+            availableBoostAds--; lastBoostAdTime = Date.now();
+            if (availableBoostAds === 19) { lastAdRecoveryTime = Date.now(); localStorage.setItem('lastAdRecoveryTime', lastAdRecoveryTime); }
             localStorage.setItem('availableBoostAds', availableBoostAds);
             localStorage.setItem('lastBoostAdTime', lastBoostAdTime);
 
-            boostRatePerHour += 0.10; 
-            totalRatePerHour = SYS_BASE_RATE + boostRatePerHour; 
-            ratePerSecond = totalRatePerHour / 3600;
-            
+            boostRatePerHour += 0.10; totalRatePerHour = SYS_BASE_RATE + boostRatePerHour; ratePerSecond = totalRatePerHour / 3600;
             boostEndTime = Date.now() + (7 * 60 * 60 * 1000); 
-            
             totalAdsWatched++; 
+            
             localStorage.setItem('sys_totalAds', totalAdsWatched);
             localStorage.setItem('userBoostRate', boostRatePerHour);
             localStorage.setItem('boostEndTime', boostEndTime);
@@ -774,154 +721,147 @@
             document.getElementById('boostRateDisplay').innerText = `+${boostRatePerHour.toFixed(2)}/hr`;
             document.getElementById('totalRateDisplay').innerText = `${totalRatePerHour.toFixed(2)}/hr`;
             
-            updateRadarSpeed(); 
-            checkAndUpdateBoostTimer();
-            updateBoostButtonUI();
+            updateRadarSpeed(); checkAndUpdateBoostTimer(); updateBoostButtonUI();
+            syncDataToFirebase(); // Sync reward to Admin
         }
 
+        // ============================================
+        // 6. FIREBASE WITHDRAWALS
+        // ============================================
         function openWithdrawModal() {
             soundClick();
             document.getElementById('withdrawAvailBal').innerText = `Available: ${balance.toLocaleString('en-US', {maximumFractionDigits: 2})} MINE`;
             let inputField = document.getElementById('withdrawAmount');
-            if(balance >= SYS_MIN_WITHDRAW) { inputField.value = Math.floor(balance); } 
-            else { inputField.value = ""; }
+            if(balance >= SYS_MIN_WITHDRAW) { inputField.value = Math.floor(balance); } else { inputField.value = ""; }
             inputField.placeholder = `Min: ${SYS_MIN_WITHDRAW.toLocaleString()}`;
             document.getElementById('withdrawModal').style.display = 'flex';
         }
-
-        function closeWithdrawModal() {
-            soundClick();
-            document.getElementById('withdrawModal').style.display = 'none';
-        }
+        function closeWithdrawModal() { soundClick(); document.getElementById('withdrawModal').style.display = 'none'; }
 
         function updateWithdrawInput() {
             const method = document.getElementById('withdrawMethod').value;
-            const label = document.getElementById('withdrawLabel');
-            const input = document.getElementById('withdrawAddress');
-            if (method === 'upi') {
-                label.innerText = "Enter UPI ID";
-                input.placeholder = "e.g. name@okhdfcbank";
-            } else {
-                label.innerText = "Enter TON Wallet Address";
-                input.placeholder = "e.g. UQ... or EQ...";
-            }
+            document.getElementById('withdrawLabel').innerText = method === 'upi' ? "Enter UPI ID" : "Enter TON Wallet Address";
+            document.getElementById('withdrawAddress').placeholder = method === 'upi' ? "e.g. name@okhdfcbank" : "e.g. UQ... or EQ...";
         }
 
         function processWithdrawal() {
             soundClick();
-            const amountStr = document.getElementById('withdrawAmount').value;
-            const amount = parseFloat(amountStr);
+            const amount = parseFloat(document.getElementById('withdrawAmount').value);
             const address = document.getElementById('withdrawAddress').value.trim();
             const method = document.getElementById('withdrawMethod').value;
 
-            if (isNaN(amount) || amount < SYS_MIN_WITHDRAW) { alert(`Minimum withdrawal is ${SYS_MIN_WITHDRAW.toLocaleString()} MINE! You don't have enough balance.`); return; }
-            if (amount > balance) { alert("Insufficient balance! You are trying to withdraw more than you have."); return; }
-            if (address === "") { alert(`Please enter your ${method === 'upi' ? 'UPI ID' : 'TON Wallet Address'}!`); return; }
+            if (isNaN(amount) || amount < SYS_MIN_WITHDRAW) { alert(`Minimum withdrawal is ${SYS_MIN_WITHDRAW.toLocaleString()} MINE!`); return; }
+            if (amount > balance) { alert("Insufficient balance!"); return; }
+            if (address === "") { alert("Please enter your address/UPI!"); return; }
 
-            balance -= amount; updateAllBalances();
-            
-            let pendingRequests = JSON.parse(localStorage.getItem('pendingWithdrawals')) || [];
-            pendingRequests.push({ amount: amount, method: method.toUpperCase(), address: address, date: new Date().getTime(), status: 'Pending' });
-            localStorage.setItem('pendingWithdrawals', JSON.stringify(pendingRequests));
+            // Deduct balance
+            balance -= amount; updateAllBalances(); syncDataToFirebase();
 
-            alert(`✅ Withdrawal Successful!\n\n${amount.toLocaleString()} MINE will be sent to your ${method.toUpperCase()} (${address}) shortly.`);
-            closeWithdrawModal();
-            document.getElementById('withdrawAddress').value = "";
+            // Push to Firebase LIVE Database
+            database.ref('withdrawals').push({
+                userId: tgUserId,
+                method: method.toUpperCase(),
+                address: address,
+                amount: amount,
+                date: new Date().getTime(),
+                status: 'Pending'
+            }).then(() => {
+                alert(`✅ Request Sent!\n\n${amount.toLocaleString()} MINE will be processed shortly.`);
+                closeWithdrawModal(); document.getElementById('withdrawAddress').value = "";
+            }).catch(e => {
+                alert("Error sending request: " + e.message);
+                balance += amount; updateAllBalances(); // Refund on error
+            });
         }
 
         function openHistoryModal() {
             soundClick(); loadHistoryData();
             document.getElementById('historyModal').style.display = 'flex';
         }
-
         function closeHistoryModal() { soundClick(); document.getElementById('historyModal').style.display = 'none'; }
 
+        // Fetch History Live from Firebase
         function loadHistoryData() {
             const historyList = document.getElementById('historyList');
-            let requests = JSON.parse(localStorage.getItem('pendingWithdrawals')) || [];
-            historyList.innerHTML = "";
-            if (requests.length === 0) {
-                historyList.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 30px 10px; font-size: 14px;">No withdrawal history found.</div>`;
-                return;
-            }
-            requests.slice().reverse().forEach(req => {
-                let dateStr = new Date(req.date).toLocaleString('en-US', { day:'numeric', month:'short', year:'numeric', hour: '2-digit', minute:'2-digit' });
-                let amountStr = parseFloat(req.amount).toLocaleString('en-US');
-                let statusClass = "status-pending"; let icon = '<i class="fa-solid fa-clock"></i>';
-                if (req.status === 'Approved') { statusClass = "status-approved"; icon = '<i class="fa-solid fa-check"></i>'; } 
-                else if (req.status === 'Rejected') { statusClass = "status-rejected"; icon = '<i class="fa-solid fa-xmark"></i>'; }
+            historyList.innerHTML = `<div style="text-align:center; padding: 20px;">Loading live data...</div>`;
+            
+            database.ref('withdrawals').orderByChild('userId').equalTo(tgUserId).once('value', (snapshot) => {
+                historyList.innerHTML = "";
+                if(!snapshot.exists()) {
+                    historyList.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 30px 10px; font-size: 14px;">No withdrawal history found.</div>`;
+                    return;
+                }
+                
+                let requests = [];
+                snapshot.forEach(child => { requests.push(child.val()); });
+                
+                requests.reverse().forEach(req => {
+                    let dateStr = new Date(req.date).toLocaleString('en-US', { day:'numeric', month:'short', hour: '2-digit', minute:'2-digit' });
+                    let amountStr = parseFloat(req.amount).toLocaleString('en-US');
+                    let statusClass = "status-pending"; let icon = '<i class="fa-solid fa-clock"></i>';
+                    if (req.status === 'Approved') { statusClass = "status-approved"; icon = '<i class="fa-solid fa-check"></i>'; } 
+                    else if (req.status === 'Rejected') { statusClass = "status-rejected"; icon = '<i class="fa-solid fa-xmark"></i>'; }
 
-                let item = `
-                    <div class="history-item">
-                        <div class="hist-row">
-                            <span class="hist-amount">${amountStr} <span style="font-size: 12px; color: var(--text-muted);">MINE</span></span>
-                            <span class="hist-status ${statusClass}">${icon} ${req.status}</span>
+                    historyList.innerHTML += `
+                        <div class="history-item">
+                            <div class="hist-row">
+                                <span class="hist-amount">${amountStr} <span style="font-size: 12px; color: var(--text-muted);">MINE</span></span>
+                                <span class="hist-status ${statusClass}">${icon} ${req.status}</span>
+                            </div>
+                            <div class="hist-row" style="margin-top: 5px;">
+                                <span style="color: var(--primary); font-weight: bold; font-size: 12px;">${req.method}</span>
+                                <span class="hist-date">${dateStr}</span>
+                            </div>
+                            <div style="font-family: monospace; color: var(--text-muted); font-size: 11px; margin-top: 5px; word-break: break-all; background: rgba(0,0,0,0.3); padding: 5px; border-radius: 5px;">
+                                ${req.address}
+                            </div>
                         </div>
-                        <div class="hist-row" style="margin-top: 5px;">
-                            <span style="color: var(--primary); font-weight: bold; font-size: 12px;">${req.method}</span>
-                            <span class="hist-date">${dateStr}</span>
-                        </div>
-                        <div style="font-family: monospace; color: var(--text-muted); font-size: 11px; margin-top: 5px; word-break: break-all; background: rgba(0,0,0,0.3); padding: 5px; border-radius: 5px;">
-                            ${req.address}
-                        </div>
-                    </div>
-                `;
-                historyList.innerHTML += item;
+                    `;
+                });
             });
         }
 
+        // ============================================
+        // 7. PLINKO GAME
+        // ============================================
         const adRequirements = { "1": 1, "5": 1, "8": 2, "20": 5 };
         const slotsMultiplier = [110, 41, 10, 5, 3, 1.5, 1, 0.5, 0.2, 0.5, 1, 1.5, 3, 5, 10, 41, 110];
         let isGameRunning = false; let currentBet = 0; let ballsToDrop = 0; let activeBallsCount = 0; let totalWinForRound = 0;
         let totalAdsNeeded = 0; let currentAdIndex = 1;
 
         function generatePyramid() {
-            const container = document.getElementById('pegsContainer');
-            container.innerHTML = '';
+            const container = document.getElementById('pegsContainer'); container.innerHTML = '';
             for(let r=3; r<=18; r++) { 
                 let row = document.createElement('div'); row.className = 'peg-row';
                 for(let p=0; p<r; p++) { let peg = document.createElement('div'); peg.className = 'peg'; row.appendChild(peg); }
                 container.appendChild(row);
             }
         }
-
         function modifyBet(action) {
-            soundClick();
-            let input = document.getElementById('betAmount'); let val = parseFloat(input.value) || 0;
-            if(action === 'max') input.value = balance.toFixed(2);
-            else input.value = Math.max(1, (val * action)).toFixed(2);
+            soundClick(); let input = document.getElementById('betAmount'); let val = parseFloat(input.value) || 0;
+            if(action === 'max') input.value = balance.toFixed(2); else input.value = Math.max(1, (val * action)).toFixed(2);
             updateDropBtnText();
         }
-
         function updateDropBtnText() {
-            let balls = document.getElementById('ballCountSelect').value;
-            let ads = adRequirements[balls];
-            let bet = parseFloat(document.getElementById('betAmount').value) || 0;
-            let totalCost = (bet * balls).toFixed(2);
+            let balls = document.getElementById('ballCountSelect').value; let ads = adRequirements[balls];
+            let bet = parseFloat(document.getElementById('betAmount').value) || 0; let totalCost = (bet * balls).toFixed(2);
             document.getElementById('btnMainText').innerText = `Play ${totalCost} MINE (Watch ${ads} Ad${ads>1?'s':''})`;
         }
 
         function prepareGame() {
             if (isGameRunning) return; soundClick();
-            ballsToDrop = parseInt(document.getElementById('ballCountSelect').value);
-            currentBet = parseFloat(document.getElementById('betAmount').value);
+            ballsToDrop = parseInt(document.getElementById('ballCountSelect').value); currentBet = parseFloat(document.getElementById('betAmount').value);
             let totalCost = currentBet * ballsToDrop;
-
-            if (isNaN(currentBet) || currentBet <= 0) { alert("Invalid Bet!"); return; }
-            if (totalCost > balance) { alert(`Insufficient Balance! You need ${totalCost.toFixed(2)} MINE for ${ballsToDrop} balls.`); return; }
-            
+            if (isNaN(currentBet) || currentBet <= 0) return alert("Invalid Bet!");
+            if (totalCost > balance) return alert(`Insufficient Balance! You need ${totalCost.toFixed(2)} MINE.`);
             totalAdsNeeded = adRequirements[ballsToDrop]; currentAdIndex = 1; showAdVideo();
         }
 
         function showAdVideo() {
-            const modal = document.getElementById('adModal');
-            const timerText = document.getElementById('adCountdown');
-            const btn = document.getElementById('claimAdBtn');
-            const progressText = document.getElementById('adProgressText');
-            
+            const modal = document.getElementById('adModal'); const timerText = document.getElementById('adCountdown');
+            const btn = document.getElementById('claimAdBtn'); const progressText = document.getElementById('adProgressText');
             modal.style.display = 'flex'; btn.disabled = true; btn.classList.remove('ready'); 
             btn.innerText = "Please Wait..."; progressText.innerText = `Watching Ad ${currentAdIndex} of ${totalAdsNeeded}`;
-            
             let timeLeft = 3; timerText.innerText = `${timeLeft}s`;
             let adInterval = setInterval(() => {
                 timeLeft--; timerText.innerText = `${timeLeft}s`;
@@ -932,7 +872,6 @@
                 }
             }, 1000);
         }
-
         function handleAdNext() {
             soundClick();
             if (currentAdIndex < totalAdsNeeded) { currentAdIndex++; showAdVideo(); } 
@@ -940,9 +879,8 @@
         }
 
         function startBallStream() {
-            let totalCost = currentBet * ballsToDrop;
-            balance -= totalCost; totalAdsWatched += totalAdsNeeded;
-            localStorage.setItem('sys_totalAds', totalAdsWatched); updateAllBalances();
+            let totalCost = currentBet * ballsToDrop; balance -= totalCost; totalAdsWatched += totalAdsNeeded;
+            localStorage.setItem('sys_totalAds', totalAdsWatched); updateAllBalances(); syncDataToFirebase();
             
             isGameRunning = true; document.getElementById('dropBtn').disabled = true;
             document.getElementById('gameResultText').innerText = `Dropping ${ballsToDrop} Balls...`;
@@ -953,9 +891,7 @@
         }
 
         function spawnAndAnimateBall() {
-            const board = document.getElementById('board');
-            const ball = document.createElement('div'); ball.className = 'ball'; board.appendChild(ball);
-
+            const board = document.getElementById('board'); const ball = document.createElement('div'); ball.className = 'ball'; board.appendChild(ball);
             let keyframes = []; let currentLeft = 50; let currentTop = 1; let topStep = 83 / 16; 
             keyframes.push({ left: `${currentLeft}%`, top: `${currentTop}%` });
             let rightCount = 0; let bounceTiming = [];
@@ -968,7 +904,7 @@
                 currentLeft = nextLeft; currentTop = nextTop; bounceTiming.push(i * 180); 
             }
             keyframes.push({ left: `${currentLeft}%`, top: `94%`, easing: 'ease-in' });
-            const animationTime = 16 * 180; let anim = ball.animate(keyframes, { duration: animationTime, fill: 'forwards' });
+            const animationTime = 16 * 180; ball.animate(keyframes, { duration: animationTime, fill: 'forwards' });
             bounceTiming.forEach(time => { setTimeout(soundPlink, time); });
 
             setTimeout(() => {
@@ -988,9 +924,10 @@
             else if (netProfit < 0) { resultText.innerText = `Round Over. Loss: ${Math.abs(netProfit).toFixed(2)}`; resultText.style.color = "var(--danger)"; } 
             else { resultText.innerText = `Round Over. Broke Even.`; resultText.style.color = "var(--warning)"; }
             isGameRunning = false; document.getElementById('dropBtn').disabled = false;
+            syncDataToFirebase(); // Sync final balance after game
         }
 
-        // INIT
+        // START APP
         initApp();
 
     </script>
