@@ -8,7 +8,11 @@
     <!-- 1. TELEGRAM WEB APP SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-    <!-- 2. MONETAG SDK SCRIPT (For Boost & Game Ads) -->
+    <!-- 2. FIREBASE SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <!-- 3. MONETAG SDK SCRIPT (For Boost & Game Ads) -->
     <script src='//libtl.com/sdk.js' data-zone='10677778' data-sdk='show_10677778'></script>
     
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
@@ -347,6 +351,7 @@
                     <button onclick="closeHistoryModal()" style="background: none; border: none; color: white; font-size: 22px; cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
                 </div>
                 <div id="historyList" style="overflow-y: auto; flex-grow: 1; display: flex; flex-direction: column; gap: 10px; padding-top: 10px;">
+                    <!-- History will be loaded from Firebase -->
                 </div>
             </div>
         </div>
@@ -361,7 +366,28 @@
 
     <!-- MAIN LOGIC -->
     <script>
-        // TELEGRAM USER DATA
+        // ==========================================
+        // YAHAN APNA FIREBASE CONFIG DAALEIN (SAME AS ADMIN PANEL)
+        // ==========================================
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // Initialize Firebase
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.database();
+
+        let userId = "User_Guest";
+        let userName = "Miner";
+
         function fetchTelegramUserData() {
             if (window.Telegram && window.Telegram.WebApp) {
                 const tg = window.Telegram.WebApp;
@@ -370,17 +396,34 @@
 
                 const tgUser = tg.initDataUnsafe?.user;
                 if (tgUser) {
-                    document.getElementById('userNameDisplay').innerText = tgUser.first_name || "Miner";
+                    userId = tgUser.id.toString();
+                    userName = tgUser.first_name || "Miner";
+                    document.getElementById('userNameDisplay').innerText = userName;
                     if (tgUser.photo_url) {
                         document.getElementById('userProfilePic').innerHTML = `<img src="${tgUser.photo_url}" alt="User">`;
                     }
+                } else {
+                    // Fallback for browser testing
+                    generateFallbackUserId();
                 }
+            } else {
+                generateFallbackUserId();
             }
         }
 
+        function generateFallbackUserId() {
+            let storedId = localStorage.getItem('uniqueUserId');
+            if(!storedId) {
+                storedId = 'User_' + Math.floor(Math.random() * 100000);
+                localStorage.setItem('uniqueUserId', storedId);
+            }
+            userId = storedId;
+            document.getElementById('userNameDisplay').innerText = userId;
+        }
+
+        // Audio System
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         let audioCtx;
-
         function initAudio() { if(!audioCtx) audioCtx = new AudioContext(); if(audioCtx.state === 'suspended') audioCtx.resume(); }
         function playTone(freq, type, duration, vol) {
             if(!audioCtx) return;
@@ -392,27 +435,26 @@
             osc.connect(gain); gain.connect(audioCtx.destination);
             osc.start(); osc.stop(audioCtx.currentTime + duration);
         }
-
         function soundClick() { initAudio(); playTone(400, 'sine', 0.1, 0.1); }
         function soundPlink() { initAudio(); playTone(900 + Math.random()*200, 'triangle', 0.05, 0.01); } 
         function soundWin() { initAudio(); playTone(500, 'square', 0.1, 0.1); setTimeout(()=>playTone(800, 'square', 0.2, 0.1), 100); }
         function soundLose() { initAudio(); playTone(200, 'sawtooth', 0.3, 0.1); }
 
         // VARIABLES & SYSTEM
-        let balance = parseFloat(localStorage.getItem('userBalance')) || 100.0000;
+        let balance = 0.00;
         let isMining = localStorage.getItem('isMining') === 'true';
         let miningEndTime = parseInt(localStorage.getItem('miningEndTime')) || 0;
         
-        let SYS_BASE_RATE = parseFloat(localStorage.getItem('sys_baseRate')) || 0.50;
-        let SYS_COIN_VALUE = parseFloat(localStorage.getItem('sys_coinValue')) || 0.0000001;
-        let SYS_MIN_WITHDRAW = parseFloat(localStorage.getItem('sys_minWithdraw')) || 500000000; 
+        let SYS_BASE_RATE = 0.50;
+        let SYS_COIN_VALUE = 0.0000001;
+        let SYS_MIN_WITHDRAW = 500000000; 
 
         // BOOST VARIABLES
-        let boostRatePerHour = parseFloat(localStorage.getItem('userBoostRate')) || 0.00;
-        let boostEndTime = parseInt(localStorage.getItem('boostEndTime')) || 0;
-        let totalAdsWatched = parseInt(localStorage.getItem('sys_totalAds')) || 0; 
+        let boostRatePerHour = 0.00;
+        let boostEndTime = 0;
+        let totalAdsWatched = 0; 
         
-        let totalRatePerHour = SYS_BASE_RATE + boostRatePerHour; 
+        let totalRatePerHour = SYS_BASE_RATE; 
         let ratePerSecond = totalRatePerHour / 3600;
         let miningInterval, timerInterval;
 
@@ -441,6 +483,98 @@
                 earned = offlineSeconds * baseRateSec;
             }
             return earned;
+        }
+
+        // FIREBASE SYNC FUNCTIONS
+        function syncUserToFirebase() {
+            if(!userId) return;
+            db.ref('users/' + userId).update({
+                balance: balance,
+                boostRate: boostRatePerHour,
+                adsWatched: totalAdsWatched,
+                boostEndTime: boostEndTime,
+                lastActive: firebase.database.ServerValue.TIMESTAMP
+            });
+        }
+
+        function initApp() {
+            fetchTelegramUserData(); 
+
+            // 1. Listen to Live Settings from Admin
+            db.ref('system_settings').on('value', (snap) => {
+                const settings = snap.val();
+                if(settings) {
+                    SYS_BASE_RATE = parseFloat(settings.baseRate) || 0.50;
+                    SYS_COIN_VALUE = parseFloat(settings.coinValue) || 0.0000001;
+                    SYS_MIN_WITHDRAW = parseFloat(settings.minWithdraw) || 500000000;
+                    
+                    totalRatePerHour = SYS_BASE_RATE + boostRatePerHour;
+                    ratePerSecond = totalRatePerHour / 3600;
+
+                    document.getElementById('baseRateDisplay').innerText = `${SYS_BASE_RATE.toFixed(2)}/hr`;
+                    document.getElementById('conversionText').innerText = `Conversion: 1 MINE = $${SYS_COIN_VALUE}`;
+                    document.getElementById('totalRateDisplay').innerText = `${totalRatePerHour.toFixed(2)}/hr`;
+                    updateAllBalances();
+                }
+            });
+
+            // 2. Fetch User Data from Firebase on startup
+            db.ref('users/' + userId).once('value').then((snap) => {
+                let now = new Date().getTime();
+                let lastTime = parseInt(localStorage.getItem('lastUpdateTime')) || now;
+
+                if(snap.exists()) {
+                    let dbData = snap.val();
+                    // Load from DB (This allows Admin to edit user balances)
+                    balance = parseFloat(dbData.balance) || 100.0000;
+                    boostRatePerHour = parseFloat(dbData.boostRate) || 0.00;
+                    totalAdsWatched = parseInt(dbData.adsWatched) || 0;
+                    boostEndTime = parseInt(dbData.boostEndTime) || 0;
+                } else {
+                    // New User Fallback
+                    balance = parseFloat(localStorage.getItem('userBalance')) || 100.0000;
+                    boostRatePerHour = parseFloat(localStorage.getItem('userBoostRate')) || 0.00;
+                    totalAdsWatched = parseInt(localStorage.getItem('sys_totalAds')) || 0;
+                    boostEndTime = parseInt(localStorage.getItem('boostEndTime')) || 0;
+                }
+
+                // Add Offline Earnings
+                if (isMining) {
+                    let earned = calculateOfflineEarnings(lastTime, now);
+                    if (earned > 0) balance += earned;
+                }
+                localStorage.setItem('lastUpdateTime', now);
+
+                totalRatePerHour = SYS_BASE_RATE + boostRatePerHour;
+                ratePerSecond = totalRatePerHour / 3600;
+
+                checkAndUpdateBoostTimer();
+                checkAdRecovery();
+                
+                // Fast UI Check Intervals
+                setInterval(() => {
+                    checkAndUpdateBoostTimer();
+                    checkAdRecovery();
+                }, 1000);
+
+                // SYNC TO FIREBASE EVERY 10 SECONDS
+                setInterval(() => {
+                    if(isMining) syncUserToFirebase();
+                }, 10000);
+
+                updateAllBalances();
+                document.getElementById('boostRateDisplay').innerText = `+${boostRatePerHour.toFixed(2)}/hr`;
+                document.getElementById('totalRateDisplay').innerText = `${totalRatePerHour.toFixed(2)}/hr`;
+                
+                updateRadarSpeed(); 
+                generatePyramid(); 
+                updateDropBtnText();
+                
+                if (isMining && new Date().getTime() < miningEndTime) resumeMining();
+                else stopMining();
+                
+                document.body.addEventListener('click', () => { initAudio(); }, {once:true});
+            });
         }
 
         function checkAdRecovery() {
@@ -498,13 +632,12 @@
                 boostRatePerHour = 0.00;
                 totalRatePerHour = SYS_BASE_RATE; 
                 ratePerSecond = totalRatePerHour / 3600;
-                localStorage.setItem('userBoostRate', '0');
-                localStorage.setItem('boostEndTime', '0');
                 
                 document.getElementById('boostRateDisplay').innerText = `+0.00/hr`;
                 document.getElementById('totalRateDisplay').innerText = `${totalRatePerHour.toFixed(2)}/hr`;
                 timerDisplay.innerText = ""; 
                 updateRadarSpeed(); 
+                syncUserToFirebase();
             } 
             else if (boostRatePerHour > 0 && now <= boostEndTime) {
                 let d = boostEndTime - now;
@@ -515,46 +648,6 @@
             } else {
                 timerDisplay.innerText = "";
             }
-        }
-
-        function initApp() {
-            fetchTelegramUserData(); 
-
-            let now = new Date().getTime();
-            let lastTime = parseInt(localStorage.getItem('lastUpdateTime')) || now;
-
-            if (isMining) {
-                let earned = calculateOfflineEarnings(lastTime, now);
-                if (earned > 0) {
-                    balance += earned;
-                    localStorage.setItem('userBalance', balance);
-                }
-            }
-            localStorage.setItem('lastUpdateTime', now);
-
-            checkAndUpdateBoostTimer();
-            checkAdRecovery();
-            
-            setInterval(() => {
-                checkAndUpdateBoostTimer();
-                checkAdRecovery();
-            }, 1000);
-
-            document.getElementById('baseRateDisplay').innerText = `${SYS_BASE_RATE.toFixed(2)}/hr`;
-            document.getElementById('conversionText').innerText = `Conversion: 1 MINE = $${SYS_COIN_VALUE}`;
-            
-            updateAllBalances();
-            document.getElementById('boostRateDisplay').innerText = `+${boostRatePerHour.toFixed(2)}/hr`;
-            document.getElementById('totalRateDisplay').innerText = `${totalRatePerHour.toFixed(2)}/hr`;
-            
-            updateRadarSpeed(); 
-            generatePyramid(); 
-            updateDropBtnText();
-            
-            if (isMining && new Date().getTime() < miningEndTime) resumeMining();
-            else stopMining();
-            
-            document.body.addEventListener('click', () => { initAudio(); }, {once:true});
         }
 
         function updateAllBalances() {
@@ -587,6 +680,7 @@
             localStorage.setItem('miningEndTime', miningEndTime);
             localStorage.setItem('lastUpdateTime', new Date().getTime());
             resumeMining();
+            syncUserToFirebase();
         }
         
         function resumeMining() {
@@ -655,11 +749,7 @@
             ratePerSecond = totalRatePerHour / 3600;
             
             boostEndTime = Date.now() + (7 * 60 * 60 * 1000); 
-            
             totalAdsWatched++; 
-            localStorage.setItem('sys_totalAds', totalAdsWatched);
-            localStorage.setItem('userBoostRate', boostRatePerHour);
-            localStorage.setItem('boostEndTime', boostEndTime);
 
             document.getElementById('boostRateDisplay').innerText = `+${boostRatePerHour.toFixed(2)}/hr`;
             document.getElementById('totalRateDisplay').innerText = `${totalRatePerHour.toFixed(2)}/hr`;
@@ -667,8 +757,13 @@
             updateRadarSpeed(); 
             checkAndUpdateBoostTimer();
             updateBoostButtonUI();
+            
+            syncUserToFirebase(); // Force DB update
         }
 
+        // ==========================================
+        // FIREBASE WITHDRAWAL SYSTEM
+        // ==========================================
         function openWithdrawModal() {
             soundClick();
             document.getElementById('withdrawAvailBal').innerText = `Available: ${balance.toLocaleString('en-US', {maximumFractionDigits: 2})} MINE`;
@@ -708,58 +803,88 @@
             if (amount > balance) { alert("Insufficient balance! You are trying to withdraw more than you have."); return; }
             if (address === "") { alert(`Please enter your ${method === 'upi' ? 'UPI ID' : 'TON Wallet Address'}!`); return; }
 
-            balance -= amount; updateAllBalances();
+            balance -= amount; 
+            updateAllBalances();
             
-            let pendingRequests = JSON.parse(localStorage.getItem('pendingWithdrawals')) || [];
-            pendingRequests.push({ amount: amount, method: method.toUpperCase(), address: address, date: new Date().getTime(), status: 'Pending' });
-            localStorage.setItem('pendingWithdrawals', JSON.stringify(pendingRequests));
+            // Push to Firebase Withdrawals node
+            let newWithdrawalRef = db.ref('withdrawals').push();
+            newWithdrawalRef.set({
+                userId: userId,
+                amount: amount,
+                method: method.toUpperCase(),
+                address: address,
+                date: firebase.database.ServerValue.TIMESTAMP,
+                status: 'Pending'
+            });
 
-            alert(`✅ Withdrawal Successful!\n\n${amount.toLocaleString()} MINE will be sent to your ${method.toUpperCase()} (${address}) shortly.`);
+            syncUserToFirebase(); // Update user balance in Firebase immediately
+
+            alert(`✅ Withdrawal Submitted!\n\n${amount.toLocaleString()} MINE requested for your ${method.toUpperCase()}. Admin will review it shortly.`);
             closeWithdrawModal();
             document.getElementById('withdrawAddress').value = "";
         }
 
         function openHistoryModal() {
-            soundClick(); loadHistoryData();
+            soundClick(); 
+            loadHistoryData();
             document.getElementById('historyModal').style.display = 'flex';
         }
 
-        function closeHistoryModal() { soundClick(); document.getElementById('historyModal').style.display = 'none'; }
+        function closeHistoryModal() { 
+            soundClick(); 
+            document.getElementById('historyModal').style.display = 'none'; 
+        }
 
         function loadHistoryData() {
             const historyList = document.getElementById('historyList');
-            let requests = JSON.parse(localStorage.getItem('pendingWithdrawals')) || [];
-            historyList.innerHTML = "";
-            if (requests.length === 0) {
-                historyList.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 30px 10px; font-size: 14px;">No withdrawal history found.</div>`;
-                return;
-            }
-            requests.slice().reverse().forEach(req => {
-                let dateStr = new Date(req.date).toLocaleString('en-US', { day:'numeric', month:'short', year:'numeric', hour: '2-digit', minute:'2-digit' });
-                let amountStr = parseFloat(req.amount).toLocaleString('en-US');
-                let statusClass = "status-pending"; let icon = '<i class="fa-solid fa-clock"></i>';
-                if (req.status === 'Approved') { statusClass = "status-approved"; icon = '<i class="fa-solid fa-check"></i>'; } 
-                else if (req.status === 'Rejected') { statusClass = "status-rejected"; icon = '<i class="fa-solid fa-xmark"></i>'; }
+            historyList.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 30px 10px; font-size: 14px;"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</div>`;
+            
+            // Query Firebase for User's History
+            db.ref('withdrawals').orderByChild('userId').equalTo(userId).once('value').then((snap) => {
+                historyList.innerHTML = "";
+                if(!snap.exists()) {
+                    historyList.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 30px 10px; font-size: 14px;">No withdrawal history found.</div>`;
+                    return;
+                }
 
-                let item = `
-                    <div class="history-item">
-                        <div class="hist-row">
-                            <span class="hist-amount">${amountStr} <span style="font-size: 12px; color: var(--text-muted);">MINE</span></span>
-                            <span class="hist-status ${statusClass}">${icon} ${req.status}</span>
+                let requests = [];
+                snap.forEach(childSnap => {
+                    requests.push(childSnap.val());
+                });
+
+                // Sort by latest
+                requests.sort((a,b) => b.date - a.date);
+
+                requests.forEach(req => {
+                    let dateStr = new Date(req.date).toLocaleString('en-US', { day:'numeric', month:'short', year:'numeric', hour: '2-digit', minute:'2-digit' });
+                    let amountStr = parseFloat(req.amount).toLocaleString('en-US');
+                    let statusClass = "status-pending"; let icon = '<i class="fa-solid fa-clock"></i>';
+                    if (req.status === 'Approved') { statusClass = "status-approved"; icon = '<i class="fa-solid fa-check"></i>'; } 
+                    else if (req.status === 'Rejected') { statusClass = "status-rejected"; icon = '<i class="fa-solid fa-xmark"></i>'; }
+
+                    let item = `
+                        <div class="history-item">
+                            <div class="hist-row">
+                                <span class="hist-amount">${amountStr} <span style="font-size: 12px; color: var(--text-muted);">MINE</span></span>
+                                <span class="hist-status ${statusClass}">${icon} ${req.status}</span>
+                            </div>
+                            <div class="hist-row" style="margin-top: 5px;">
+                                <span style="color: var(--primary); font-weight: bold; font-size: 12px;">${req.method}</span>
+                                <span class="hist-date">${dateStr}</span>
+                            </div>
+                            <div style="font-family: monospace; color: var(--text-muted); font-size: 11px; margin-top: 5px; word-break: break-all; background: rgba(0,0,0,0.3); padding: 5px; border-radius: 5px;">
+                                ${req.address}
+                            </div>
                         </div>
-                        <div class="hist-row" style="margin-top: 5px;">
-                            <span style="color: var(--primary); font-weight: bold; font-size: 12px;">${req.method}</span>
-                            <span class="hist-date">${dateStr}</span>
-                        </div>
-                        <div style="font-family: monospace; color: var(--text-muted); font-size: 11px; margin-top: 5px; word-break: break-all; background: rgba(0,0,0,0.3); padding: 5px; border-radius: 5px;">
-                            ${req.address}
-                        </div>
-                    </div>
-                `;
-                historyList.innerHTML += item;
+                    `;
+                    historyList.innerHTML += item;
+                });
             });
         }
 
+        // ==========================================
+        // PLINKO GAME LOGIC
+        // ==========================================
         const adRequirements = { "1": 1, "5": 1, "8": 2, "20": 5 };
         const slotsMultiplier = [110, 41, 10, 5, 3, 1.5, 1, 0.5, 0.2, 0.5, 1, 1.5, 3, 5, 10, 41, 110];
         let isGameRunning = false; let currentBet = 0; let ballsToDrop = 0; let activeBallsCount = 0; let totalWinForRound = 0;
@@ -831,8 +956,10 @@
 
         function startBallStream() {
             let totalCost = currentBet * ballsToDrop;
-            balance -= totalCost; totalAdsWatched += totalAdsNeeded;
-            localStorage.setItem('sys_totalAds', totalAdsWatched); updateAllBalances();
+            balance -= totalCost; 
+            totalAdsWatched += totalAdsNeeded;
+            updateAllBalances();
+            syncUserToFirebase(); // Update DB at the start of bet
             
             isGameRunning = true; document.getElementById('dropBtn').disabled = true;
             document.getElementById('gameResultText').innerText = `Dropping ${ballsToDrop} Balls...`;
@@ -866,6 +993,7 @@
                 balance += win; totalWinForRound += win; updateAllBalances();
                 if(mult >= 1.5) soundWin(); else if(mult < 1) soundLose();
                 ball.remove(); activeBallsCount--;
+                
                 if(activeBallsCount === 0) finishRound();
                 else { document.getElementById('gameResultText').innerText = `Live Win: +${totalWinForRound.toFixed(2)}`; document.getElementById('gameResultText').style.color = "var(--primary)"; }
             }, animationTime + 100);
@@ -878,6 +1006,8 @@
             else if (netProfit < 0) { resultText.innerText = `Round Over. Loss: ${Math.abs(netProfit).toFixed(2)}`; resultText.style.color = "var(--danger)"; } 
             else { resultText.innerText = `Round Over. Broke Even.`; resultText.style.color = "var(--warning)"; }
             isGameRunning = false; document.getElementById('dropBtn').disabled = false;
+            
+            syncUserToFirebase(); // Sync final balance after game ends
         }
 
         // INIT
