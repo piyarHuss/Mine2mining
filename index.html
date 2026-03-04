@@ -7,11 +7,8 @@
     
     <!-- 1. TELEGRAM WEB APP SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    
-    <!-- 2. RICHADS NETWORK SCRIPT (Sirf Source load karein, initialize neeche karenge) -->
-    <script src="https://richinfo.co/richpartners/telegram/js/tg-ob.js"></script>
 
-    <!-- 3. MONETAG SDK SCRIPT -->
+    <!-- 2. MONETAG SDK SCRIPT (For Boost & Game Ads) -->
     <script src='//libtl.com/sdk.js' data-zone='10677778' data-sdk='show_10677778'></script>
     
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
@@ -36,7 +33,6 @@
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent; }
         
-        /* OVERFLOW HIDDEN REMOVED FROM BODY SO ADS DON'T CUT OFF */
         body { background-color: var(--bg-main); color: var(--text-main); display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow-y: auto; overflow-x: hidden; }
         
         /* Container Setup */
@@ -108,9 +104,6 @@
         .action-btns button:active { transform: scale(0.95); }
         .withdraw-btn { background: linear-gradient(135deg, #ef4444, #dc2626); color: white; box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3); }
         .play-game-btn { background: linear-gradient(135deg, var(--warning), #d97706); color: white; box-shadow: 0 8px 20px rgba(245, 158, 11, 0.3); }
-
-        /* AD CONTAINER CSS */
-        .ad-container { width: 100%; min-height: 60px; margin-top: auto; display: flex; justify-content: center; align-items: center; padding: 10px 0; border-radius: 12px; background: rgba(0,0,0,0.2); border: 1px dashed rgba(255,255,255,0.1); }
 
         /* --- PLINKO GAME STYLES --- */
         .game-container { padding: 5px 15px; }
@@ -256,12 +249,6 @@
                     <button class="withdraw-btn" onclick="openWithdrawModal()"><i class="fa-solid fa-money-bill-transfer"></i> Withdraw</button>
                     <button class="play-game-btn" onclick="switchTab('gamePage')"><i class="fa-solid fa-dice"></i> Casino</button>
                 </div>
-                
-                <!-- NEW: DEDICATED AD BANNER SPACE FOR RICHADS -->
-                <div class="ad-container" id="richads-wallet-banner">
-                    <!-- RichAds will automatically appear here -->
-                </div>
-
             </div>
         </div>
 
@@ -374,23 +361,6 @@
 
     <!-- MAIN LOGIC -->
     <script>
-        // ==========================================
-        // INITIALIZE RICHADS AFTER PAGE LOADS
-        // ==========================================
-        document.addEventListener("DOMContentLoaded", function() {
-            setTimeout(() => {
-                if (typeof TelegramAdsController !== 'undefined') {
-                    window.TelegramAdsController = new TelegramAdsController();
-                    window.TelegramAdsController.initialize({
-                        pubId: "997172",
-                        appId: "6406",
-                    });
-                } else {
-                    console.log("RichAds script failed to load or Adblocker active.");
-                }
-            }, 500); // 500ms delay taaki baki elements ready ho jaye
-        });
-
         // TELEGRAM USER DATA
         function fetchTelegramUserData() {
             if (window.Telegram && window.Telegram.WebApp) {
@@ -656,6 +626,7 @@
             }
             if (now - lastBoostAdTime < 5000) return;
 
+            // MONETAG AD TRIGGER
             if (typeof show_10677778 === 'function') {
                 show_10677778().then(() => {
                     applyBoostReward();
