@@ -367,16 +367,17 @@
     <!-- MAIN LOGIC -->
     <script>
         // ==========================================
-        // YAHAN APNA FIREBASE CONFIG DAALEIN (SAME AS ADMIN PANEL)
+        // YOUR UPDATED FIREBASE CONFIG
         // ==========================================
         const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-            databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_PROJECT_ID.appspot.com",
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-            appId: "YOUR_APP_ID"
+            apiKey: "AIzaSyDbvONjiKgqYfYwKIkUusXb7vf0r3jLrnA",
+            authDomain: "video-spp.firebaseapp.com",
+            databaseURL: "https://video-spp-default-rtdb.firebaseio.com",
+            projectId: "video-spp",
+            storageBucket: "video-spp.firebasestorage.app",
+            messagingSenderId: "383033368244",
+            appId: "1:383033368244:web:fbbad9cd538a275fefc1e1",
+            measurementId: "G-RT80D7H4R2"
         };
 
         // Initialize Firebase
@@ -403,7 +404,6 @@
                         document.getElementById('userProfilePic').innerHTML = `<img src="${tgUser.photo_url}" alt="User">`;
                     }
                 } else {
-                    // Fallback for browser testing
                     generateFallbackUserId();
                 }
             } else {
@@ -421,7 +421,6 @@
             document.getElementById('userNameDisplay').innerText = userId;
         }
 
-        // Audio System
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         let audioCtx;
         function initAudio() { if(!audioCtx) audioCtx = new AudioContext(); if(audioCtx.state === 'suspended') audioCtx.resume(); }
@@ -440,7 +439,6 @@
         function soundWin() { initAudio(); playTone(500, 'square', 0.1, 0.1); setTimeout(()=>playTone(800, 'square', 0.2, 0.1), 100); }
         function soundLose() { initAudio(); playTone(200, 'sawtooth', 0.3, 0.1); }
 
-        // VARIABLES & SYSTEM
         let balance = 0.00;
         let isMining = localStorage.getItem('isMining') === 'true';
         let miningEndTime = parseInt(localStorage.getItem('miningEndTime')) || 0;
@@ -449,7 +447,6 @@
         let SYS_COIN_VALUE = 0.0000001;
         let SYS_MIN_WITHDRAW = 500000000; 
 
-        // BOOST VARIABLES
         let boostRatePerHour = 0.00;
         let boostEndTime = 0;
         let totalAdsWatched = 0; 
@@ -463,7 +460,6 @@
         let lastBoostAdTime = parseInt(localStorage.getItem('lastBoostAdTime')) || 0;
         let lastAdRecoveryTime = parseInt(localStorage.getItem('lastAdRecoveryTime')) || Date.now();
 
-        // CALCULATOR
         function calculateOfflineEarnings(lastTime, currentTime) {
             if(lastTime >= currentTime) return 0;
             let actualEndTime = Math.min(currentTime, miningEndTime); 
@@ -485,7 +481,6 @@
             return earned;
         }
 
-        // FIREBASE SYNC FUNCTIONS
         function syncUserToFirebase() {
             if(!userId) return;
             db.ref('users/' + userId).update({
@@ -500,7 +495,6 @@
         function initApp() {
             fetchTelegramUserData(); 
 
-            // 1. Listen to Live Settings from Admin
             db.ref('system_settings').on('value', (snap) => {
                 const settings = snap.val();
                 if(settings) {
@@ -518,27 +512,23 @@
                 }
             });
 
-            // 2. Fetch User Data from Firebase on startup
             db.ref('users/' + userId).once('value').then((snap) => {
                 let now = new Date().getTime();
                 let lastTime = parseInt(localStorage.getItem('lastUpdateTime')) || now;
 
                 if(snap.exists()) {
                     let dbData = snap.val();
-                    // Load from DB (This allows Admin to edit user balances)
                     balance = parseFloat(dbData.balance) || 100.0000;
                     boostRatePerHour = parseFloat(dbData.boostRate) || 0.00;
                     totalAdsWatched = parseInt(dbData.adsWatched) || 0;
                     boostEndTime = parseInt(dbData.boostEndTime) || 0;
                 } else {
-                    // New User Fallback
                     balance = parseFloat(localStorage.getItem('userBalance')) || 100.0000;
                     boostRatePerHour = parseFloat(localStorage.getItem('userBoostRate')) || 0.00;
                     totalAdsWatched = parseInt(localStorage.getItem('sys_totalAds')) || 0;
                     boostEndTime = parseInt(localStorage.getItem('boostEndTime')) || 0;
                 }
 
-                // Add Offline Earnings
                 if (isMining) {
                     let earned = calculateOfflineEarnings(lastTime, now);
                     if (earned > 0) balance += earned;
@@ -551,13 +541,11 @@
                 checkAndUpdateBoostTimer();
                 checkAdRecovery();
                 
-                // Fast UI Check Intervals
                 setInterval(() => {
                     checkAndUpdateBoostTimer();
                     checkAdRecovery();
                 }, 1000);
 
-                // SYNC TO FIREBASE EVERY 10 SECONDS
                 setInterval(() => {
                     if(isMining) syncUserToFirebase();
                 }, 10000);
@@ -720,7 +708,6 @@
             }
             if (now - lastBoostAdTime < 5000) return;
 
-            // MONETAG AD TRIGGER
             if (typeof show_10677778 === 'function') {
                 show_10677778().then(() => {
                     applyBoostReward();
@@ -758,12 +745,9 @@
             checkAndUpdateBoostTimer();
             updateBoostButtonUI();
             
-            syncUserToFirebase(); // Force DB update
+            syncUserToFirebase(); 
         }
 
-        // ==========================================
-        // FIREBASE WITHDRAWAL SYSTEM
-        // ==========================================
         function openWithdrawModal() {
             soundClick();
             document.getElementById('withdrawAvailBal').innerText = `Available: ${balance.toLocaleString('en-US', {maximumFractionDigits: 2})} MINE`;
@@ -806,7 +790,6 @@
             balance -= amount; 
             updateAllBalances();
             
-            // Push to Firebase Withdrawals node
             let newWithdrawalRef = db.ref('withdrawals').push();
             newWithdrawalRef.set({
                 userId: userId,
@@ -817,7 +800,7 @@
                 status: 'Pending'
             });
 
-            syncUserToFirebase(); // Update user balance in Firebase immediately
+            syncUserToFirebase(); 
 
             alert(`✅ Withdrawal Submitted!\n\n${amount.toLocaleString()} MINE requested for your ${method.toUpperCase()}. Admin will review it shortly.`);
             closeWithdrawModal();
@@ -839,7 +822,6 @@
             const historyList = document.getElementById('historyList');
             historyList.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 30px 10px; font-size: 14px;"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</div>`;
             
-            // Query Firebase for User's History
             db.ref('withdrawals').orderByChild('userId').equalTo(userId).once('value').then((snap) => {
                 historyList.innerHTML = "";
                 if(!snap.exists()) {
@@ -852,7 +834,6 @@
                     requests.push(childSnap.val());
                 });
 
-                // Sort by latest
                 requests.sort((a,b) => b.date - a.date);
 
                 requests.forEach(req => {
@@ -882,9 +863,6 @@
             });
         }
 
-        // ==========================================
-        // PLINKO GAME LOGIC
-        // ==========================================
         const adRequirements = { "1": 1, "5": 1, "8": 2, "20": 5 };
         const slotsMultiplier = [110, 41, 10, 5, 3, 1.5, 1, 0.5, 0.2, 0.5, 1, 1.5, 3, 5, 10, 41, 110];
         let isGameRunning = false; let currentBet = 0; let ballsToDrop = 0; let activeBallsCount = 0; let totalWinForRound = 0;
@@ -959,7 +937,7 @@
             balance -= totalCost; 
             totalAdsWatched += totalAdsNeeded;
             updateAllBalances();
-            syncUserToFirebase(); // Update DB at the start of bet
+            syncUserToFirebase(); 
             
             isGameRunning = true; document.getElementById('dropBtn').disabled = true;
             document.getElementById('gameResultText').innerText = `Dropping ${ballsToDrop} Balls...`;
@@ -1007,12 +985,10 @@
             else { resultText.innerText = `Round Over. Broke Even.`; resultText.style.color = "var(--warning)"; }
             isGameRunning = false; document.getElementById('dropBtn').disabled = false;
             
-            syncUserToFirebase(); // Sync final balance after game ends
+            syncUserToFirebase(); 
         }
 
-        // INIT
         initApp();
-
     </script>
 </body>
 </html>
