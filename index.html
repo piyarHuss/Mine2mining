@@ -685,22 +685,47 @@
 
         // --- AD BOOST ---
         function watchAdToBoost() {
-            soundClick(); let now = Date.now();
-            if (availableBoostAds <= 0) { alert("Please wait, ads will recover over time."); return; }
+            soundClick(); 
+            let now = Date.now();
+            
+            if (availableBoostAds <= 0) { 
+                alert("Please wait, ads will recover over time."); 
+                return; 
+            }
             if (now - lastBoostAdTime < 5000) return;
+            
             let adsWatchedThisCycle = 20 - availableBoostAds;
+
+            // Fallback reward function
+            const fallbackReward = () => { 
+                console.log("Ad failed to load. Giving fallback reward.");
+                applyBoostReward(); 
+            };
 
             if (adsWatchedThisCycle < 5 && window.TelegramAdsController) {
                 let adPromise = typeof window.TelegramAdsController.showAd === 'function' ? window.TelegramAdsController.showAd() : window.TelegramAdsController.show();
-                if (adPromise) adPromise.then(applyBoostReward).catch(applyBoostReward); else applyBoostReward();
+                if (adPromise) {
+                    adPromise.then(applyBoostReward).catch(fallbackReward); 
+                } else {
+                    fallbackReward();
+                }
             } else if (adsWatchedThisCycle < 10 && typeof show_10677778 === 'function') {
-                show_10677778().then(applyBoostReward).catch(e => console.log(e));
-            } else if (adsWatchedThisCycle < 15 && adsgramRewarded) {
-                adsgramRewarded.show().then(applyBoostReward).catch(e => console.log(e));
-            } else if (adsgramInterstitial) {
-                adsgramInterstitial.show().then(applyBoostReward).catch(e => console.log(e));
+                show_10677778().then(applyBoostReward).catch((e) => {
+                    console.log("Monetag error:", e);
+                    fallbackReward(); 
+                });
+            } else if (adsWatchedThisCycle < 15 && window.Adsgram && adsgramRewarded) {
+                adsgramRewarded.show().then(applyBoostReward).catch((e) => {
+                    console.log("Adsgram Rewarded error:", e);
+                    fallbackReward(); 
+                });
+            } else if (window.Adsgram && adsgramInterstitial) {
+                adsgramInterstitial.show().then(applyBoostReward).catch((e) => {
+                    console.log("Adsgram Interstitial error:", e);
+                    fallbackReward(); 
+                });
             } else {
-                applyBoostReward(); // Fallback
+                fallbackReward(); 
             }
         }
 
