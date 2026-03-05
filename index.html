@@ -8,8 +8,8 @@
     <!-- 1. TELEGRAM WEB APP SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-    <!-- 2. MONETAG SDK SCRIPT (HTTPS FIX) -->
-    <script src="https://libtl.com/sdk.js" data-zone="10677778" data-sdk="show_10677778"></script>
+    <!-- 2. MONETAG SDK SCRIPT (For Boost & Game Ads) -->
+    <script src='//libtl.com/sdk.js' data-zone='10677778' data-sdk='show_10677778'></script>
 
     <!-- 3. ADSGRAM SDK SCRIPT -->
     <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
@@ -18,7 +18,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-database-compat.js"></script>
     
-    <!-- 5. RICHADS NETWORK SDK -->
+    <!-- 5. RICHADS NETWORK SDK (Kept for compatibility) -->
     <script src="https://richinfo.co/richpartners/telegram/js/tg-ob.js"></script>
     <script>
       window.TelegramAdsController = new TelegramAdsController();
@@ -285,7 +285,7 @@
             </div>
         </div>
 
-        <!-- AD MODAL (USED FOR BOTH BOOST & GAME) -->
+        <!-- AD MODAL -->
         <div class="modal-overlay" id="adModal">
             <div class="ad-box">
                 <h3><i class="fa-solid fa-video" style="color:var(--primary);"></i> Watch Ads to Play</h3>
@@ -295,7 +295,7 @@
                     <span style="color: var(--text-muted); font-size: 12px; margin-top: 5px;">Playing Video...</span>
                 </div>
                 <div class="ad-timer" id="adCountdown">3s</div>
-                <button class="skip-ad-btn" id="claimAdBtn" disabled onclick="handleAdClick()">Please Wait...</button>
+                <button class="skip-ad-btn" id="claimAdBtn" disabled onclick="handleAdNext()">Please Wait...</button>
             </div>
         </div>
 
@@ -353,11 +353,6 @@
     <!-- MAIN LOGIC -->
     <script>
         // ============================================
-        // GLOBAL AD CONTEXT (game or boost)
-        // ============================================
-        let currentAdContext = 'game'; 
-
-        // ============================================
         // 1. FIREBASE INITIALIZATION 
         // ============================================
         const firebaseConfig = {
@@ -400,6 +395,7 @@
                     }
                 }
             }
+            // First DB save on load (So admin sees profile immediately)
             database.ref('users/' + tgUserId).update({
                 name: userName,
                 photo_url: userPhoto,
@@ -426,7 +422,10 @@
         let ratePerSecond = totalRatePerHour / 3600;
         let miningInterval, timerInterval;
 
-        let availableBoostAds = parseInt(localStorage.getItem('availableBoostAds')) || 20;
+        // Ads logic Updates (26 Ads Limit)
+        let availableBoostAds = parseInt(localStorage.getItem('availableBoostAds'));
+        if (isNaN(availableBoostAds)) availableBoostAds = 26; // Default 26
+        
         let lastBoostAdTime = parseInt(localStorage.getItem('lastBoostAdTime')) || 0;
         let lastAdRecoveryTime = parseInt(localStorage.getItem('lastAdRecoveryTime')) || Date.now();
 
@@ -460,6 +459,8 @@
         // ============================================
         // 4. FIREBASE LISTENERS & DATA SYNC
         // ============================================
+
+        // Sync local data up to Firebase
         function syncDataToFirebase() {
             database.ref('users/' + tgUserId).update({
                 balance: balance,
@@ -469,8 +470,11 @@
             });
             localStorage.setItem('userBalance', balance);
         }
+
+        // Keep updating Firebase every 10 seconds
         setInterval(syncDataToFirebase, 10000); 
 
+        // Listen for Global Settings from Admin
         database.ref('system_settings').on('value', (snap) => {
             const val = snap.val();
             if(val) {
@@ -492,13 +496,19 @@
             }
         });
 
+        // Listen for direct admin changes to this user
+        let lastSyncedBalance = balance;
         database.ref('users/' + tgUserId).on('value', (snap) => {
             if(!snap.exists()) return; 
             let data = snap.val();
+            
+            // If admin forces a balance change (diff > 5 to avoid overriding normal mining ticks)
             if (data.balance !== undefined && Math.abs(data.balance - balance) > 5) {
                 balance = parseFloat(data.balance);
+                lastSyncedBalance = balance;
                 updateAllBalances();
             }
+            // If admin changes boost rate
             if (data.boostRate !== undefined && data.boostRate !== boostRatePerHour) {
                 boostRatePerHour = parseFloat(data.boostRate);
                 totalRatePerHour = SYS_BASE_RATE + boostRatePerHour;
@@ -510,7 +520,7 @@
         });
 
         // ============================================
-        // 5. MINING LOGIC
+        // 5. MINING & ADS LOGIC
         // ============================================
         function calculateOfflineEarnings(lastTime, currentTime) {
             if(lastTime >= currentTime) return 0;
@@ -533,33 +543,49 @@
             return earned;
         }
 
+        // New Ad Recovery Logic (4 ads every 2 hours)
         function checkAdRecovery() {
             let now = Date.now();
-            if (availableBoostAds < 20) { 
+            let maxAds = 26; // Total limit
+            
+            if (availableBoostAds < maxAds) { 
                 let elapsed = now - lastAdRecoveryTime;
-                let recovered = Math.floor(elapsed / (15 * 60 * 1000));
-                if (recovered > 0) {
-                    availableBoostAds = Math.min(20, availableBoostAds + recovered);
-                    lastAdRecoveryTime += recovered * (15 * 60 * 1000); 
+                let recoveryInterval = 2 * 60 * 60 * 1000; // 2 hours in ms
+                
+                let recoveredCycles = Math.floor(elapsed / recoveryInterval);
+                if (recoveredCycles > 0) {
+                    let adsToRecover = recoveredCycles * 4; // 4 ads per 2 hours
+                    availableBoostAds = Math.min(maxAds, availableBoostAds + adsToRecover);
+                    lastAdRecoveryTime += recoveredCycles * recoveryInterval; 
+                    
                     localStorage.setItem('availableBoostAds', availableBoostAds);
                     localStorage.setItem('lastAdRecoveryTime', lastAdRecoveryTime);
                 }
             } else {
-                lastAdRecoveryTime = now; localStorage.setItem('lastAdRecoveryTime', lastAdRecoveryTime);
+                lastAdRecoveryTime = now; 
+                localStorage.setItem('lastAdRecoveryTime', lastAdRecoveryTime);
             }
             updateBoostButtonUI();
         }
 
+        // New Button UI Update (6s Cooldown)
         function updateBoostButtonUI() {
             let btn = document.getElementById('mainBoostBtn');
             let now = Date.now();
+            
             if (availableBoostAds <= 0) {
-                btn.innerText = `No Ads Left (Recovering...)`; btn.style.opacity = '0.5'; btn.style.cursor = 'not-allowed';
-            } else if (now - lastBoostAdTime < 5000) {
-                let left = Math.ceil((5000 - (now - lastBoostAdTime))/1000);
-                btn.innerText = `Wait ${left}s...`; btn.style.opacity = '0.7'; btn.style.cursor = 'not-allowed';
+                btn.innerText = `No Ads Left (Recovering...)`; 
+                btn.style.opacity = '0.5'; 
+                btn.style.cursor = 'not-allowed';
+            } else if (now - lastBoostAdTime < 6000) { // 6 Second Cooldown
+                let left = Math.ceil((6000 - (now - lastBoostAdTime))/1000);
+                btn.innerText = `Wait ${left}s...`; 
+                btn.style.opacity = '0.7'; 
+                btn.style.cursor = 'not-allowed';
             } else {
-                btn.innerText = `Boost Rate (+0.10/hr) [Ads: ${availableBoostAds}/20]`; btn.style.opacity = '1'; btn.style.cursor = 'pointer';
+                btn.innerText = `Boost Rate (+0.10/hr) [Ads: ${availableBoostAds}/26]`; 
+                btn.style.opacity = '1'; 
+                btn.style.cursor = 'pointer';
             }
         }
 
@@ -675,85 +701,55 @@
             document.getElementById('timerDisplay').innerText = "SYSTEM STANDBY";
         }
 
-        // ============================================
-        // AD BOOST SYSTEM WITH VISUAL FALLBACK
-        // ============================================
+        // --- NEW AD WATCH SEQUENCE ---
         function watchAdToBoost() {
             soundClick(); 
             let now = Date.now();
             
             if (availableBoostAds <= 0) { 
-                alert("Please wait, ads will recover over time."); 
+                alert("Ads limit reached! 4 ads will unlock every 2 hours."); 
                 return; 
             }
-            if (now - lastBoostAdTime < 5000) return;
-            
-            let btn = document.getElementById('mainBoostBtn');
-            let originalText = btn.innerText;
-            btn.innerText = "Loading Ad...";
-            
-            let adsWatchedThisCycle = 20 - availableBoostAds;
+            if (now - lastBoostAdTime < 6000) return; // 6 seconds check
 
-            // FALLBACK: Ye function tab chalega jab real ad fail ho jaye ya browser adblock kar de.
-            const showFallbackAdPopup = () => { 
-                btn.innerText = originalText; // Reset button text
-                currentAdContext = 'boost'; // Set context to boost
-                
-                const modal = document.getElementById('adModal');
-                const timerText = document.getElementById('adCountdown');
-                const adBtn = document.getElementById('claimAdBtn');
-                const progressText = document.getElementById('adProgressText');
-                
-                modal.style.display = 'flex'; 
-                adBtn.disabled = true; 
-                adBtn.classList.remove('ready'); 
-                adBtn.innerText = "Please Wait..."; 
-                progressText.innerText = `Sponsor Ad (Mining Boost)`;
-                
-                let timeLeft = 3; 
-                timerText.innerText = `${timeLeft}s`;
-                
-                let adInterval = setInterval(() => {
-                    timeLeft--; 
-                    timerText.innerText = `${timeLeft}s`;
-                    if(timeLeft <= 0) {
-                        clearInterval(adInterval); 
-                        timerText.innerText = "Ready!"; 
-                        adBtn.disabled = false; 
-                        adBtn.classList.add('ready'); 
-                        adBtn.innerText = "Claim Boost Reward";
-                    }
-                }, 1000);
-            };
+            let adsWatchedThisCycle = 26 - availableBoostAds;
 
-            const successReward = () => {
-                btn.innerText = originalText;
-                applyBoostReward();
-            }
-
-            // Real Ads attempt
-            if (adsWatchedThisCycle < 5 && window.TelegramAdsController) {
-                let adPromise = typeof window.TelegramAdsController.showAd === 'function' ? window.TelegramAdsController.showAd() : window.TelegramAdsController.show();
-                if (adPromise) adPromise.then(successReward).catch(showFallbackAdPopup); 
-                else showFallbackAdPopup();
-            } else if (adsWatchedThisCycle < 10 && typeof show_10677778 === 'function') {
-                show_10677778().then(successReward).catch(showFallbackAdPopup);
-            } else if (adsWatchedThisCycle < 15 && window.Adsgram && adsgramRewarded) {
-                adsgramRewarded.show().then(successReward).catch(showFallbackAdPopup);
-            } else if (window.Adsgram && adsgramInterstitial) {
-                adsgramInterstitial.show().then(successReward).catch(showFallbackAdPopup);
-            } else {
-                showFallbackAdPopup();
+            // Sequence 1: 10 Ads - Monetag
+            if (adsWatchedThisCycle < 10) {
+                if (typeof show_10677778 === 'function') {
+                    show_10677778().then(applyBoostReward).catch(e => { console.log(e); applyBoostReward(); });
+                } else { applyBoostReward(); } // Fallback
+            } 
+            // Sequence 2: 10 Ads - Adsgram Interstitial
+            else if (adsWatchedThisCycle < 20) {
+                if (adsgramInterstitial) {
+                    adsgramInterstitial.show().then(applyBoostReward).catch(e => { console.log(e); applyBoostReward(); });
+                } else { applyBoostReward(); } // Fallback
+            } 
+            // Sequence 3: 6 Ads - Adsgram Rewarded
+            else if (adsWatchedThisCycle < 26) {
+                if (adsgramRewarded) {
+                    adsgramRewarded.show().then(applyBoostReward).catch(e => { console.log(e); applyBoostReward(); });
+                } else { applyBoostReward(); } // Fallback
             }
         }
 
         function applyBoostReward() {
-            availableBoostAds--; lastBoostAdTime = Date.now();
-            if (availableBoostAds === 19) { lastAdRecoveryTime = Date.now(); localStorage.setItem('lastAdRecoveryTime', lastAdRecoveryTime); }
+            availableBoostAds--; 
+            lastBoostAdTime = Date.now();
+            
+            // Set recovery time when first ad is watched in a cycle
+            if (availableBoostAds === 25) { 
+                lastAdRecoveryTime = Date.now(); 
+                localStorage.setItem('lastAdRecoveryTime', lastAdRecoveryTime); 
+            }
+            
             localStorage.setItem('availableBoostAds', availableBoostAds);
             localStorage.setItem('lastBoostAdTime', lastBoostAdTime);
 
-            boostRatePerHour += 0.10; totalRatePerHour = SYS_BASE_RATE + boostRatePerHour; ratePerSecond = totalRatePerHour / 3600;
+            boostRatePerHour += 0.10; 
+            totalRatePerHour = SYS_BASE_RATE + boostRatePerHour; 
+            ratePerSecond = totalRatePerHour / 3600;
             boostEndTime = Date.now() + (7 * 60 * 60 * 1000); 
             totalAdsWatched++; 
             
@@ -764,8 +760,10 @@
             document.getElementById('boostRateDisplay').innerText = `+${boostRatePerHour.toFixed(2)}/hr`;
             document.getElementById('totalRateDisplay').innerText = `${totalRatePerHour.toFixed(2)}/hr`;
             
-            updateRadarSpeed(); checkAndUpdateBoostTimer(); updateBoostButtonUI();
-            syncDataToFirebase();
+            updateRadarSpeed(); 
+            checkAndUpdateBoostTimer(); 
+            updateBoostButtonUI();
+            syncDataToFirebase(); // Sync reward to Admin
         }
 
         // ============================================
@@ -797,8 +795,10 @@
             if (amount > balance) { alert("Insufficient balance!"); return; }
             if (address === "") { alert("Please enter your address/UPI!"); return; }
 
+            // Deduct balance
             balance -= amount; updateAllBalances(); syncDataToFirebase();
 
+            // Push to Firebase LIVE Database
             database.ref('withdrawals').push({
                 userId: tgUserId,
                 method: method.toUpperCase(),
@@ -811,7 +811,7 @@
                 closeWithdrawModal(); document.getElementById('withdrawAddress').value = "";
             }).catch(e => {
                 alert("Error sending request: " + e.message);
-                balance += amount; updateAllBalances(); 
+                balance += amount; updateAllBalances(); // Refund on error
             });
         }
 
@@ -821,6 +821,7 @@
         }
         function closeHistoryModal() { soundClick(); document.getElementById('historyModal').style.display = 'none'; }
 
+        // Fetch History Live from Firebase
         function loadHistoryData() {
             const historyList = document.getElementById('historyList');
             historyList.innerHTML = `<div style="text-align:center; padding: 20px;">Loading live data...</div>`;
@@ -898,7 +899,6 @@
         }
 
         function showAdVideo() {
-            currentAdContext = 'game'; // Context set to game
             const modal = document.getElementById('adModal'); const timerText = document.getElementById('adCountdown');
             const btn = document.getElementById('claimAdBtn'); const progressText = document.getElementById('adProgressText');
             modal.style.display = 'flex'; btn.disabled = true; btn.classList.remove('ready'); 
@@ -913,17 +913,10 @@
                 }
             }, 1000);
         }
-
-        // UNIVERSAL AD BUTTON CLICK HANDLER (Boost & Game)
-        function handleAdClick() {
+        function handleAdNext() {
             soundClick();
-            if (currentAdContext === 'boost') {
-                document.getElementById('adModal').style.display = 'none';
-                applyBoostReward();
-            } else {
-                if (currentAdIndex < totalAdsNeeded) { currentAdIndex++; showAdVideo(); } 
-                else { document.getElementById('adModal').style.display = 'none'; startBallStream(); }
-            }
+            if (currentAdIndex < totalAdsNeeded) { currentAdIndex++; showAdVideo(); } 
+            else { document.getElementById('adModal').style.display = 'none'; startBallStream(); }
         }
 
         function startBallStream() {
@@ -972,7 +965,7 @@
             else if (netProfit < 0) { resultText.innerText = `Round Over. Loss: ${Math.abs(netProfit).toFixed(2)}`; resultText.style.color = "var(--danger)"; } 
             else { resultText.innerText = `Round Over. Broke Even.`; resultText.style.color = "var(--warning)"; }
             isGameRunning = false; document.getElementById('dropBtn').disabled = false;
-            syncDataToFirebase(); 
+            syncDataToFirebase(); // Sync final balance after game
         }
 
         // START APP
